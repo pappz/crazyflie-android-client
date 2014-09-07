@@ -69,7 +69,7 @@ public class CrazyradioLink extends AbstractLink {
 
     private static final String LOG_TAG = "Crazyflie_CrazyradioLink";
 
-    private final UsbDevice mUsbDevice;
+    private UsbDevice mUsbDevice;
     private UsbInterface mIntf;
     private UsbEndpoint mEpIn;
     private UsbEndpoint mEpOut;
@@ -77,7 +77,7 @@ public class CrazyradioLink extends AbstractLink {
 
     private Thread mRadioLinkThread;
 
-    private final BlockingDeque<CrtpPacket> mSendQueue;
+    private BlockingDeque<CrtpPacket> mSendQueue;
 
     /**
      * Holds information about a specific connection.
@@ -109,9 +109,9 @@ public class CrazyradioLink extends AbstractLink {
      * @throws IllegalArgumentException if usbManager or usbDevice is <code>null</code>
      * @throws IOException if the device cannot be opened
      */
-    public CrazyradioLink(Context context, ConnectionData connectionData) throws IOException {
-        this.mUsbManager = (UsbManager) context.getSystemService(Context.USB_SERVICE);
-        this.mUsbDevice = searchForCrazyradio(context, mUsbManager);
+    private void linkUp(Context mContext, ConnectionData connectionData) throws IOException {
+        this.mUsbManager = (UsbManager) mContext.getSystemService(Context.USB_SERVICE);
+        this.mUsbDevice = searchForCrazyradio(mContext, mUsbManager);
         if (mUsbManager == null || mUsbDevice == null) {
             throw new IllegalArgumentException("USB manager and device must not be null");
         }
@@ -262,11 +262,15 @@ public class CrazyradioLink extends AbstractLink {
     /**
      * Connect to the Crazyflie.
      * 
+     * @param usbManager
+     * @param usbDevice
+     * @param connectionData connection data to initialize the link
      * @throws IllegalStateException if the Crazyradio is not attached
+     * @throws IOException 
      */
     @Override
-    public void connect() throws IllegalStateException {
-        Log.d(LOG_TAG, "connect()");
+    public void connect(Context context, ConnectionData connectionData) throws IllegalStateException, IOException {
+        linkUp(context, connectionData);
         notifyConnectionInitiated();
 
         if (mConnection != null) {
@@ -280,7 +284,6 @@ public class CrazyradioLink extends AbstractLink {
             throw new IllegalStateException("Crazyradio not attached");
         }
     }
-
     @Override
     public void disconnect() {
         Log.d(LOG_TAG, "disconnect()");
