@@ -36,6 +36,7 @@ import se.bitcraze.crazyfliecontrol.controller.GyroscopeController;
 import se.bitcraze.crazyfliecontrol.controller.IController;
 import se.bitcraze.crazyfliecontrol.controller.TouchController;
 import se.bitcraze.crazyflielib.ConnectionAdapter;
+import se.bitcraze.crazyflielib.ConnectionListener;
 import se.bitcraze.crazyflielib.CrazyradioLink;
 import se.bitcraze.crazyflielib.Link;
 import se.bitcraze.crazyflielib.crtp.CommanderPacket;
@@ -66,274 +67,359 @@ import android.widget.Toast;
 
 import com.MobileAnarchy.Android.Widgets.Joystick.DualJoystickView;
 
-public class MainActivity extends Activity {
+public class MainActivity extends Activity implements ConnectionListener {
 
-    private static final String TAG = "CrazyflieControl";
+	private static final String TAG = "CrazyflieControl";
 
-    private DualJoystickView mDualJoystickView;
-    private FlightDataView mFlightDataView;
+	private DualJoystickView mDualJoystickView;
+	private FlightDataView mFlightDataView;
 
-    //private Link mCrazyradioLink;
+	private SharedPreferences mPreferences;
 
-    private SharedPreferences mPreferences;
+	private IController mController;
+	private GamepadController mGamepadController;
 
-    private IController mController;
-    private GamepadController mGamepadController;
+	private boolean mDoubleBackToExitPressedOnce = false;
 
-    private boolean mDoubleBackToExitPressedOnce = false;
+	private Controls mControls;
 
-    private Controls mControls;
+	private SoundPool mSoundPool;
+	private boolean mLoaded;
+	private int mSoundConnect;
+	private int mSoundDisconnect;
 
-    private SoundPool mSoundPool;
-    private boolean mLoaded;
-    private int mSoundConnect;
-    private int mSoundDisconnect;
-    
-    private CrazyflieApp crazyflieApp;
+	private CrazyflieApp crazyflieApp;
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        crazyflieApp = (CrazyflieApp) getApplication();
-        
-        setDefaultPreferenceValues();
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_main);
+		crazyflieApp = (CrazyflieApp) getApplication();
 
-        mControls = new Controls(this, mPreferences);
-        mControls.setDefaultPreferenceValues(getResources());
+		setDefaultPreferenceValues();
 
-        //Default controller
-        mDualJoystickView = (DualJoystickView) findViewById(R.id.joysticks);
-        mController = new TouchController(mControls, this, mDualJoystickView);
+		mControls = new Controls(this, mPreferences);
+		mControls.setDefaultPreferenceValues(getResources());
 
-        //initialize gamepad controller
-        mGamepadController = new GamepadController(mControls, this, mPreferences);
-        mGamepadController.setDefaultPreferenceValues(getResources());
+		// Default controller
+		mDualJoystickView = (DualJoystickView) findViewById(R.id.joysticks);
+		mController = new TouchController(mControls, this, mDualJoystickView);
 
-        mFlightDataView = (FlightDataView) findViewById(R.id.flightdataview);
+		// initialize gamepad controller
+		mGamepadController = new GamepadController(mControls, this,
+				mPreferences);
+		mGamepadController.setDefaultPreferenceValues(getResources());
 
-        IntentFilter filter = new IntentFilter();
-        filter.addAction(this.getPackageName()+".USB_PERMISSION");
-        filter.addAction(UsbManager.ACTION_USB_DEVICE_ATTACHED);
-        filter.addAction(UsbManager.ACTION_USB_DEVICE_DETACHED);
-        registerReceiver(mUsbReceiver, filter);
+		mFlightDataView = (FlightDataView) findViewById(R.id.flightdataview);
 
-        initializeSounds();
-    }
+		IntentFilter filter = new IntentFilter();
+		filter.addAction(this.getPackageName() + ".USB_PERMISSION");
+		filter.addAction(UsbManager.ACTION_USB_DEVICE_ATTACHED);
+		filter.addAction(UsbManager.ACTION_USB_DEVICE_DETACHED);
+		registerReceiver(mUsbReceiver, filter);
 
-    private void initializeSounds() {
-        this.setVolumeControlStream(AudioManager.STREAM_MUSIC);
-        // Load sounds
-        mSoundPool = new SoundPool(10, AudioManager.STREAM_MUSIC, 0);
-        mSoundPool.setOnLoadCompleteListener(new OnLoadCompleteListener() {
-            @Override
-            public void onLoadComplete(SoundPool soundPool, int sampleId, int status) {
-                mLoaded = true;
-            }
-        });
-        mSoundConnect = mSoundPool.load(this, R.raw.proxima, 1);
-        mSoundDisconnect = mSoundPool.load(this, R.raw.tejat, 1);
-    }
+		initializeSounds();
+	}
 
-    private void setDefaultPreferenceValues(){
-        // Set default preference values
-        PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
-        // Initialize preferences
-        mPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-    }
+	private void initializeSounds() {
+		this.setVolumeControlStream(AudioManager.STREAM_MUSIC);
+		// Load sounds
+		mSoundPool = new SoundPool(10, AudioManager.STREAM_MUSIC, 0);
+		mSoundPool.setOnLoadCompleteListener(new OnLoadCompleteListener() {
+			@Override
+			public void onLoadComplete(SoundPool soundPool, int sampleId,
+					int status) {
+				mLoaded = true;
+			}
+		});
+		mSoundConnect = mSoundPool.load(this, R.raw.proxima, 1);
+		mSoundDisconnect = mSoundPool.load(this, R.raw.tejat, 1);
+	}
 
-    private void checkScreenLock() {
-        boolean isScreenLock = mPreferences.getBoolean(PreferencesActivity.KEY_PREF_SCREEN_ROTATION_LOCK_BOOL, false);
-        if(isScreenLock || mController instanceof GyroscopeController){
-            this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-        }else{
-            this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
-        }
-    }
+	private void setDefaultPreferenceValues() {
+		// Set default preference values
+		PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
+		// Initialize preferences
+		mPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+	}
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.activity_main, menu);
-        return true;
-    }
+	private void checkScreenLock() {
+		boolean isScreenLock = mPreferences.getBoolean(
+				PreferencesActivity.KEY_PREF_SCREEN_ROTATION_LOCK_BOOL, false);
+		if (isScreenLock || mController instanceof GyroscopeController) {
+			this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+		} else {
+			this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
+		}
+	}
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.menu_connect:
-                try {
-                	crazyflieApp.linkConnect();                    
-                } catch (IllegalStateException e) {
-                    Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
-                }
-                break;         
-            case R.id.preferences:
-                Intent intent = new Intent(this, PreferencesActivity.class);
-                startActivity(intent);
-                break;
-        }
-        return true;
-    }
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		getMenuInflater().inflate(R.menu.activity_main, menu);
+		return true;
+	}
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        //TODO: improve
-        mControls.setControlConfig();
-        mGamepadController.setControlConfig();
-        resetInputMethod();
-        checkScreenLock();
-    }
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+		case R.id.menu_connect:
+			try {
+				crazyflieApp.linkConnect();
+			} catch (IllegalStateException e) {
+				Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
+			}
+			break;
+		case R.id.preferences:
+			Intent intent = new Intent(this, PreferencesActivity.class);
+			startActivity(intent);
+			break;
+		}
+		return true;
+	}
 
-    @Override
-    protected void onRestart() {
-        super.onRestart();
-        onResume();
-    }
+	@Override
+	public void onResume() {
+		super.onResume();
+		crazyflieApp.addConnectionListener(this);
+		// TODO: improve
+		mControls.setControlConfig();
+		mGamepadController.setControlConfig();
+		resetInputMethod();
+		checkScreenLock();
+	}
 
-    @Override
-    protected void onPause() {
-        super.onPause();
-        mControls.resetAxisValues();
-        crazyflieApp.linkDisconnect();
-        //crazyflieApp.removeConnectionListener(this);
-        //controller.disable();
-    }
+	@Override
+	protected void onRestart() {
+		super.onRestart();
+		onResume();
+	}
 
-    @Override
-    protected void onDestroy() {
-        unregisterReceiver(mUsbReceiver);
-        mSoundPool.release();
-        mSoundPool = null;
-        super.onDestroy();
-    }
+	@Override
+	protected void onPause() {
+		super.onPause();
+		mControls.resetAxisValues();
+		crazyflieApp.linkDisconnect();
+		crazyflieApp.removeConnectionListener(this);
+		mController.disable();
+	}
 
-    @Override
-    public void onBackPressed() {
-        if (mDoubleBackToExitPressedOnce) {
-            super.onBackPressed();
-            return;
-        }
-        this.mDoubleBackToExitPressedOnce = true;
-        Toast.makeText(this, "Please click BACK again to exit", Toast.LENGTH_SHORT).show();
-        new Handler().postDelayed(new Runnable() {
+	@Override
+	protected void onDestroy() {
+		unregisterReceiver(mUsbReceiver);
+		mSoundPool.release();
+		mSoundPool = null;
+		super.onDestroy();
+	}
 
+	@Override
+	public void onBackPressed() {
+		if (mDoubleBackToExitPressedOnce) {
+			super.onBackPressed();
+			return;
+		}
+		this.mDoubleBackToExitPressedOnce = true;
+		Toast.makeText(this, "Please click BACK again to exit",
+				Toast.LENGTH_SHORT).show();
+		new Handler().postDelayed(new Runnable() {
+
+			@Override
+			public void run() {
+				mDoubleBackToExitPressedOnce = false;
+
+			}
+		}, 2000);
+	}
+
+	// TODO: fix indirection
+	public void updateFlightData() {
+		mFlightDataView.updateFlightData(mController.getPitch(),
+				mController.getRoll(), mController.getThrust(),
+				mController.getYaw());
+	}
+
+	@Override
+	public boolean dispatchGenericMotionEvent(MotionEvent event) {
+		// Check that the event came from a joystick since a generic motion
+		// event could be almost anything.
+		if ((event.getSource() & InputDevice.SOURCE_CLASS_JOYSTICK) != 0
+				&& event.getAction() == MotionEvent.ACTION_MOVE) {
+			if (!(mController instanceof GamepadController)) {
+				changeToGamepadController();
+			}
+			mGamepadController.dealWithMotionEvent(event);
+			updateFlightData();
+			return true;
+		} else {
+			return super.dispatchGenericMotionEvent(event);
+		}
+	}
+
+	@Override
+	public boolean dispatchKeyEvent(KeyEvent event) {
+		// TODO: works for PS3 controller, but does it also work for other
+		// controllers?
+		// do not call super if key event comes from a gamepad, otherwise the
+		// buttons can quit the app
+		if (event.getSource() == 1281) {
+			if (!(mController instanceof GamepadController)) {
+				changeToGamepadController();
+			}
+			mGamepadController.dealWithKeyEvent(event);
+			// exception for OUYA controllers
+			if (!Build.MODEL.toUpperCase(Locale.getDefault()).contains("OUYA")) {
+				return true;
+			}
+		}
+		return super.dispatchKeyEvent(event);
+	}
+
+	// TODO: improve
+	private void changeToGamepadController() {
+		if (!((TouchController) getController()).isDisabled()) {
+			((TouchController) getController()).disable();
+		}
+		mController = mGamepadController;
+		mController.enable();
+	}
+
+	private void resetInputMethod() {
+		// TODO: reuse existing touch controller?
+
+		// Use GyroscopeController if activated in the preferences
+		if (mControls.isUseGyro()) {
+			mController = new GyroscopeController(mControls, this,
+					mDualJoystickView,
+					(SensorManager) getSystemService(Context.SENSOR_SERVICE));
+		} else {
+			mController = new TouchController(mControls, this,
+					mDualJoystickView);
+		}
+		mController.enable();
+	}
+
+	private final BroadcastReceiver mUsbReceiver = new BroadcastReceiver() {
+
+		public void onReceive(Context context, Intent intent) {
+			String action = intent.getAction();
+			Log.d(TAG, "mUsbReceiver action: " + action);
+			if ((MainActivity.this.getPackageName() + ".USB_PERMISSION")
+					.equals(action)) {
+				// reached only when USB permission on physical connect was
+				// canceled and "Connect" or "Radio Scan" is clicked
+				synchronized (this) {
+					UsbDevice device = (UsbDevice) intent
+							.getParcelableExtra(UsbManager.EXTRA_DEVICE);
+					if (intent.getBooleanExtra(
+							UsbManager.EXTRA_PERMISSION_GRANTED, false)) {
+						if (device != null) {
+							Toast.makeText(MainActivity.this,
+									"Crazyradio attached", Toast.LENGTH_SHORT)
+									.show();
+						}
+					} else {
+						Log.d(TAG, "permission denied for device " + device);
+					}
+				}
+			}
+			if (UsbManager.ACTION_USB_DEVICE_DETACHED.equals(action)) {
+				UsbDevice device = (UsbDevice) intent
+						.getParcelableExtra(UsbManager.EXTRA_DEVICE);
+				if (device != null && CrazyradioLink.isCrazyradio(device)) {
+					Log.d(TAG, "Crazyradio detached");
+					Toast.makeText(MainActivity.this, "Crazyradio detached",
+							Toast.LENGTH_SHORT).show();
+					playSound(mSoundDisconnect);
+					if (mCrazyradioLink != null) {
+						Log.d(TAG, "linkDisconnect()");
+						linkDisconnect();
+					}
+				}
+			}
+			if (UsbManager.ACTION_USB_DEVICE_ATTACHED.equals(action)) {
+				UsbDevice device = (UsbDevice) intent
+						.getParcelableExtra(UsbManager.EXTRA_DEVICE);
+				if (device != null && CrazyradioLink.isCrazyradio(device)) {
+					Log.d(TAG, "Crazyradio attached");
+					Toast.makeText(MainActivity.this, "Crazyradio attached",
+							Toast.LENGTH_SHORT).show();
+					playSound(mSoundConnect);
+				}
+			}
+		}
+	};
+
+	private void playSound(int sound) {
+		if (mLoaded) {
+			float volume = 1.0f;
+			mSoundPool.play(sound, volume, volume, 1, 0, 1f);
+		}
+	}
+
+	public IController getController() {
+		return mController;
+	}
+
+	// Connection listener implementations
+	@Override
+	public void connectionInitiated(Link l) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void connectionSetupFinished(Link l) {
+		runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				Toast.makeText(getApplicationContext(),
+						"Connection Setup finished", Toast.LENGTH_SHORT).show();
+			}
+		});
+		mController.enable();
+	}
+
+	@Override
+	public void disconnected(Link l) {
+		runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                mDoubleBackToExitPressedOnce = false;
-
+                // link quality is not available when there is no active connection
+                mFlightDataView.setLinkQualityText("n/a");
             }
-        }, 2000);
-    }
+        });
+        mController.disable();
+	}
 
-    //TODO: fix indirection
-    public void updateFlightData(){
-        mFlightDataView.updateFlightData(mController.getPitch(), mController.getRoll(), mController.getThrust(), mController.getYaw());
-    }
+	@Override
+	public void connectionLost(Link l) {
+		runOnUiThread(new Runnable() {
+			@Override
+	        public void run() {
+				Toast.makeText(getApplicationContext(), "Connection lost", Toast.LENGTH_SHORT).show();
+			}
+		});
+	    mController.disable();
+	}
 
-    @Override
-    public boolean dispatchGenericMotionEvent(MotionEvent event) {
-        // Check that the event came from a joystick since a generic motion event could be almost anything.
-        if ((event.getSource() & InputDevice.SOURCE_CLASS_JOYSTICK) != 0 && event.getAction() == MotionEvent.ACTION_MOVE) {
-        	if(!(mController instanceof GamepadController)){
-        		changeToGamepadController();
-        	}
-            mGamepadController.dealWithMotionEvent(event);
-            updateFlightData();
-            return true;
-        } else {
-            return super.dispatchGenericMotionEvent(event);
-        }
-    }
-
-    @Override
-    public boolean dispatchKeyEvent(KeyEvent event) {
-        // TODO: works for PS3 controller, but does it also work for other controllers?
-        // do not call super if key event comes from a gamepad, otherwise the buttons can quit the app
-        if (event.getSource() == 1281) {
-        	if(!(mController instanceof GamepadController)){
-        		changeToGamepadController();
-        	}
-            mGamepadController.dealWithKeyEvent(event);
-            // exception for OUYA controllers
-            if (!Build.MODEL.toUpperCase(Locale.getDefault()).contains("OUYA")) {
-                return true;
+	@Override
+	public void connectionFailed(Link l) {
+		runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(getApplicationContext(), "Connection failed", Toast.LENGTH_SHORT).show();
             }
-        }
-        return super.dispatchKeyEvent(event);
-    }
+        });
+        mController.disable();
+	}
 
-    //TODO: improve
-    private void changeToGamepadController(){
-        if (!((TouchController) getController()).isDisabled()) {
-        	((TouchController) getController()).disable();
-        }
-        mController = mGamepadController;
-        mController.enable();
-    }
-
-    private void resetInputMethod() {
-        // TODO: reuse existing touch controller?
-
-        // Use GyroscopeController if activated in the preferences
-        if (mControls.isUseGyro()) {
-            mController = new GyroscopeController(mControls, this, mDualJoystickView, (SensorManager) getSystemService(Context.SENSOR_SERVICE));
-        } else {
-            mController = new TouchController(mControls, this, mDualJoystickView);
-        }
-        mController.enable();
-    }
-
-    private final BroadcastReceiver mUsbReceiver = new BroadcastReceiver() {
-
-        public void onReceive(Context context, Intent intent) {
-            String action = intent.getAction();
-            Log.d(TAG, "mUsbReceiver action: " + action);
-            if ((MainActivity.this.getPackageName()+".USB_PERMISSION").equals(action)) {
-                //reached only when USB permission on physical connect was canceled and "Connect" or "Radio Scan" is clicked
-                synchronized (this) {
-                    UsbDevice device = (UsbDevice) intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
-                    if (intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED, false)) {
-                        if (device != null) {
-                            Toast.makeText(MainActivity.this, "Crazyradio attached", Toast.LENGTH_SHORT).show();
-                        }
-                    } else {
-                        Log.d(TAG, "permission denied for device " + device);
-                    }
-                }
+	@Override
+	public void linkQualityUpdate(Link l, final int quality) {
+		runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                mFlightDataView.setLinkQualityText(quality + "%");
             }
-            if (UsbManager.ACTION_USB_DEVICE_DETACHED.equals(action)) {
-                UsbDevice device = (UsbDevice) intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
-                if (device != null && CrazyradioLink.isCrazyradio(device)) {
-                    Log.d(TAG, "Crazyradio detached");
-                    Toast.makeText(MainActivity.this, "Crazyradio detached", Toast.LENGTH_SHORT).show();
-                    playSound(mSoundDisconnect);
-                    if (mCrazyradioLink != null) {
-                        Log.d(TAG, "linkDisconnect()");
-                        linkDisconnect();
-                    }
-                }
-            }
-            if (UsbManager.ACTION_USB_DEVICE_ATTACHED.equals(action)) {
-                UsbDevice device = (UsbDevice) intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
-                if (device != null && CrazyradioLink.isCrazyradio(device)) {
-                    Log.d(TAG, "Crazyradio attached");
-                    Toast.makeText(MainActivity.this, "Crazyradio attached", Toast.LENGTH_SHORT).show();
-                    playSound(mSoundConnect);
-                }
-            }
-        }
-    };
-
-    private void playSound(int sound){
-        if (mLoaded) {
-            float volume = 1.0f;
-            mSoundPool.play(sound, volume, volume, 1, 0, 1f);
-        }
-    }
-  
-    public IController getController(){
-    	return mController;
-    }
+        });
+	}
 
 }

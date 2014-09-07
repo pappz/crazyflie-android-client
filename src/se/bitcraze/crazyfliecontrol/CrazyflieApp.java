@@ -39,7 +39,15 @@ public class CrazyflieApp extends Application {
 		crazyradioLink.disconnect();
 	}
 	
-	private void linkConnect() {
+	public void addConnectionListener(MainActivity mainActivity) {
+		crazyradioLink.addConnectionListener(mainActivity);
+	}
+	
+	public void removeConnectionListener(MainActivity mainActivity) {
+		crazyradioLink.removeConnectionListener(mainActivity);
+	}
+	
+	public void linkConnect() {
         // ensure previous link is disconnected
         linkDisconnect();
 
