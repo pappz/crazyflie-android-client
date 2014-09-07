@@ -70,24 +70,17 @@ public class MainActivity extends Activity {
 
     private static final String TAG = "CrazyflieControl";
 
-    private static final int MAX_THRUST = 65535;
-
     private DualJoystickView mDualJoystickView;
     private FlightDataView mFlightDataView;
 
-    private Link mCrazyradioLink;
+    //private Link mCrazyradioLink;
 
     private SharedPreferences mPreferences;
 
     private IController mController;
     private GamepadController mGamepadController;
 
-    private String mRadioChannelDefaultValue;
-    private String mRadioDatarateDefaultValue;
-
     private boolean mDoubleBackToExitPressedOnce = false;
-
-    private Thread mSendJoystickDataThread;
 
     private Controls mControls;
 
@@ -95,12 +88,15 @@ public class MainActivity extends Activity {
     private boolean mLoaded;
     private int mSoundConnect;
     private int mSoundDisconnect;
+    
+    private CrazyflieApp crazyflieApp;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        crazyflieApp = (CrazyflieApp) getApplication();
+        
         setDefaultPreferenceValues();
 
         mControls = new Controls(this, mPreferences);
@@ -144,9 +140,6 @@ public class MainActivity extends Activity {
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
         // Initialize preferences
         mPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-
-        mRadioChannelDefaultValue = getString(R.string.preferences_radio_channel_defaultValue);
-        mRadioDatarateDefaultValue = getString(R.string.preferences_radio_datarate_defaultValue);
     }
 
     private void checkScreenLock() {
@@ -165,29 +158,15 @@ public class MainActivity extends Activity {
     }
 
     @Override
-    public boolean onPrepareOptionsMenu(final Menu menu) {
-        if (mCrazyradioLink != null && mCrazyradioLink.isConnected()) {
-            menu.findItem(R.id.menu_connect).setTitle(R.string.menu_disconnect);
-        } else {
-            menu.findItem(R.id.menu_connect).setTitle(R.string.menu_connect);
-        }
-        return super.onPrepareOptionsMenu(menu);
-    }
-
-    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_connect:
                 try {
-                    if (mCrazyradioLink != null && mCrazyradioLink.isConnected()) {
-                        linkDisconnect();
-                    } else {
-                        linkConnect();
-                    }
+                	crazyflieApp.linkConnect();                    
                 } catch (IllegalStateException e) {
                     Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
                 }
-                break;
+                break;         
             case R.id.preferences:
                 Intent intent = new Intent(this, PreferencesActivity.class);
                 startActivity(intent);
@@ -216,9 +195,9 @@ public class MainActivity extends Activity {
     protected void onPause() {
         super.onPause();
         mControls.resetAxisValues();
-        if (mCrazyradioLink != null) {
-            linkDisconnect();
-        }
+        crazyflieApp.linkDisconnect();
+        //crazyflieApp.removeConnectionListener(this);
+        //controller.disable();
     }
 
     @Override
@@ -352,113 +331,7 @@ public class MainActivity extends Activity {
             mSoundPool.play(sound, volume, volume, 1, 0, 1f);
         }
     }
-
-    private void linkConnect() {
-        // ensure previous link is disconnected
-        linkDisconnect();
-
-        int radioChannel = Integer.parseInt(mPreferences.getString(PreferencesActivity.KEY_PREF_RADIO_CHANNEL, mRadioChannelDefaultValue));
-        int radioDatarate = Integer.parseInt(mPreferences.getString(PreferencesActivity.KEY_PREF_RADIO_DATARATE, mRadioDatarateDefaultValue));
-
-        try {
-            // create link
-            mCrazyradioLink = new CrazyradioLink(this, new CrazyradioLink.ConnectionData(radioChannel, radioDatarate));
-
-            // add listener for connection status
-            mCrazyradioLink.addConnectionListener(new ConnectionAdapter() {
-                @Override
-                public void connectionSetupFinished(Link l) {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Toast.makeText(getApplicationContext(), "Connected", Toast.LENGTH_SHORT).show();
-                        }
-                    });
-                }
-
-                @Override
-                public void connectionLost(Link l) {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Toast.makeText(getApplicationContext(), "Connection lost", Toast.LENGTH_SHORT).show();
-                        }
-                    });
-                    linkDisconnect();
-                }
-
-                @Override
-                public void connectionFailed(Link l) {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Toast.makeText(getApplicationContext(), "Connection failed", Toast.LENGTH_SHORT).show();
-                        }
-                    });
-                    linkDisconnect();
-                }
-
-                @Override
-                public void linkQualityUpdate(Link l, final int quality) {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            mFlightDataView.setLinkQualityText(quality + "%");
-                        }
-                    });
-                }
-            });
-
-            // connect and start thread to periodically send commands containing
-            // the user input
-            mCrazyradioLink.connect();
-            mSendJoystickDataThread = new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    while (mCrazyradioLink != null) {
-                        mCrazyradioLink.send(new CommanderPacket(mController.getRoll(), mController.getPitch(), mController.getYaw(), (char) (mController.getThrust()/100 * MAX_THRUST), mControls.isXmode()));
-
-                        try {
-                            Thread.sleep(20, 0);
-                        } catch (InterruptedException e) {
-                            break;
-                        }
-                    }
-                }
-            });
-            mSendJoystickDataThread.start();
-        } catch (IllegalArgumentException e) {
-            Log.d(TAG, e.getMessage());
-            Toast.makeText(this, "Crazyradio not attached", Toast.LENGTH_SHORT).show();
-        } catch (IOException e) {
-            Log.e(TAG, e.getMessage());
-            Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    public Link getCrazyflieLink(){
-        return mCrazyradioLink;
-    }
-
-    public void linkDisconnect() {
-        if (mCrazyradioLink != null) {
-            mCrazyradioLink.disconnect();
-            mCrazyradioLink = null;
-        }
-        if (mSendJoystickDataThread != null) {
-            mSendJoystickDataThread.interrupt();
-            mSendJoystickDataThread = null;
-        }
-
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                // link quality is not available when there is no active connection
-                mFlightDataView.setLinkQualityText("n/a");
-            }
-        });
-    }
-
+  
     public IController getController(){
     	return mController;
     }
