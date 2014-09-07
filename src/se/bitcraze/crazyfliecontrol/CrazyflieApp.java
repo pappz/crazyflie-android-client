@@ -1,14 +1,80 @@
 package se.bitcraze.crazyfliecontrol;
 
+import java.io.IOException;
+
+import se.bitcraze.crazyfliecontrol.controller.IController;
+import se.bitcraze.crazyflielib.CrazyradioLink;
+import se.bitcraze.crazyflielib.crtp.CommanderPacket;
 import android.app.Application;
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
+import android.util.Log;
+import android.widget.Toast;
 
 public class CrazyflieApp extends Application {
+	private static final String TAG = "Crazyflie.APP";
+	
 	Context context;
+	private CrazyradioLink crazyradioLink;
+	private SharedPreferences preferences;
+	private IController controller;
+	private boolean xmode = false;
 
 	@Override
 	public void onCreate() {
 		super.onCreate();
 		context = getApplicationContext();
+		
+		crazyradioLink = new CrazyradioLink();
+		preferences = PreferenceManager.getDefaultSharedPreferences(this);
+	}
+	
+	@Override
+	public void onTerminate() {
+		crazyradioLink.disconnect();
+	}
+	
+	public void crazyradioDetached() {
+		crazyradioLink.disconnect();
+	}
+	
+	private void linkConnect() {
+        // ensure previous link is disconnected
+        linkDisconnect();
+
+        int radioChannel = Integer.parseInt(preferences.getString(PreferencesActivity.KEY_PREF_RADIO_CHANNEL, getString(R.string.preferences_radio_channel_defaultValue)));
+        int radioDatarate = Integer.parseInt(preferences.getString(PreferencesActivity.KEY_PREF_RADIO_DATARATE, getString(R.string.preferences_radio_datarate_defaultValue)));        	
+    	
+        try {
+            // create link
+        	crazyradioLink.connect(context, new CrazyradioLink.ConnectionData(radioChannel, radioDatarate));
+
+            // connect and start thread to periodically send commands containing
+            // the user input
+        	new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    while (crazyradioLink.isConnected()) {                       
+                    	crazyradioLink.send(new CommanderPacket(controller.getRoll(), controller.getPitch(), controller.getYaw(), (char) controller.getThrust(), xmode));
+                        try {
+                            Thread.sleep(20, 0);
+                        } catch (InterruptedException e) {
+                            break;
+                        }
+                    }
+                }
+            }).start();
+        } catch (IllegalArgumentException e) {
+            Log.d(TAG, e.getMessage());
+            Toast.makeText(this, "Crazyradio not attached", Toast.LENGTH_SHORT).show();
+        } catch (IOException e) {
+            Log.e(TAG, e.getMessage());
+            Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
+        }
+    }
+	
+	public void linkDisconnect() {        
+		crazyradioLink.disconnect();
 	}
 }
