@@ -26,8 +26,11 @@ public class CrazyflieApp extends Application {
 		super.onCreate();
 		context = getApplicationContext();
 		
-		crazyradioLink = new CrazyradioLink();
+		PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
 		preferences = PreferenceManager.getDefaultSharedPreferences(this);
+		
+		crazyradioLink = new CrazyradioLink();
+
 	}
 	
 	@Override
