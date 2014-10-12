@@ -26,6 +26,7 @@ public class CrazyflieApp extends Application {
 		super.onCreate();
 		context = getApplicationContext();
 		
+		//Should I do it?
 		PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
 		preferences = PreferenceManager.getDefaultSharedPreferences(this);
 		
@@ -42,6 +43,10 @@ public class CrazyflieApp extends Application {
 		crazyradioLink.disconnect();
 	}
 	
+	public void crazyradioAttached() {
+		Log.d(TAG,"Attached the usb");
+	}
+
 	public void addConnectionListener(MainActivity mainActivity) {
 		crazyradioLink.addConnectionListener(mainActivity);
 	}
@@ -85,12 +90,14 @@ public class CrazyflieApp extends Application {
         }
     }
 	
+	public void linkDisconnect() {
+		crazyradioLink.disconnect();
+	}
+
 	public void setController(IController controller, boolean x){
 		mController = controller;
 		xmode = x;
 	}
 	
-	public void linkDisconnect() {        
-		crazyradioLink.disconnect();
-	}
+
 }

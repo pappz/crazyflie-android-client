@@ -83,11 +83,6 @@ public class MainActivity extends Activity implements ConnectionListener {
 
 	private Controls mControls;
 
-	private SoundPool mSoundPool;
-	private boolean mLoaded;
-	private int mSoundConnect;
-	private int mSoundDisconnect;
-
 	private CrazyflieApp crazyflieApp;
 
 	@Override
@@ -111,29 +106,6 @@ public class MainActivity extends Activity implements ConnectionListener {
 		mGamepadController.setDefaultPreferenceValues(getResources());
 
 		mFlightDataView = (FlightDataView) findViewById(R.id.flightdataview);
-
-		IntentFilter filter = new IntentFilter();
-		filter.addAction(this.getPackageName() + ".USB_PERMISSION");
-		filter.addAction(UsbManager.ACTION_USB_DEVICE_ATTACHED);
-		filter.addAction(UsbManager.ACTION_USB_DEVICE_DETACHED);
-		registerReceiver(mUsbReceiver, filter);
-
-		initializeSounds();
-	}
-
-	private void initializeSounds() {
-		this.setVolumeControlStream(AudioManager.STREAM_MUSIC);
-		// Load sounds
-		mSoundPool = new SoundPool(10, AudioManager.STREAM_MUSIC, 0);
-		mSoundPool.setOnLoadCompleteListener(new OnLoadCompleteListener() {
-			@Override
-			public void onLoadComplete(SoundPool soundPool, int sampleId,
-					int status) {
-				mLoaded = true;
-			}
-		});
-		mSoundConnect = mSoundPool.load(this, R.raw.proxima, 1);
-		mSoundDisconnect = mSoundPool.load(this, R.raw.tejat, 1);
 	}
 
 	private void setDefaultPreferenceValues() {
@@ -201,14 +173,6 @@ public class MainActivity extends Activity implements ConnectionListener {
 		crazyflieApp.linkDisconnect();
 		crazyflieApp.removeConnectionListener(this);
 		mController.disable();
-	}
-
-	@Override
-	protected void onDestroy() {
-		unregisterReceiver(mUsbReceiver);
-		mSoundPool.release();
-		mSoundPool = null;
-		super.onDestroy();
 	}
 
 	@Override
@@ -295,64 +259,6 @@ public class MainActivity extends Activity implements ConnectionListener {
 					mDualJoystickView);
 		}
 		mController.enable();
-	}
-
-	private final BroadcastReceiver mUsbReceiver = new BroadcastReceiver() {
-
-		public void onReceive(Context context, Intent intent) {
-			String action = intent.getAction();
-			Log.d(TAG, "mUsbReceiver action: " + action);
-			if ((MainActivity.this.getPackageName() + ".USB_PERMISSION")
-					.equals(action)) {
-				// reached only when USB permission on physical connect was
-				// canceled and "Connect" or "Radio Scan" is clicked
-				synchronized (this) {
-					UsbDevice device = (UsbDevice) intent
-							.getParcelableExtra(UsbManager.EXTRA_DEVICE);
-					if (intent.getBooleanExtra(
-							UsbManager.EXTRA_PERMISSION_GRANTED, false)) {
-						if (device != null) {
-							Toast.makeText(MainActivity.this,
-									"Crazyradio attached", Toast.LENGTH_SHORT)
-									.show();
-						}
-					} else {
-						Log.d(TAG, "permission denied for device " + device);
-					}
-				}
-			}
-			if (UsbManager.ACTION_USB_DEVICE_DETACHED.equals(action)) {
-				UsbDevice device = (UsbDevice) intent
-						.getParcelableExtra(UsbManager.EXTRA_DEVICE);
-				if (device != null && CrazyradioLink.isCrazyradio(device)) {
-					Log.d(TAG, "Crazyradio detached");
-					Toast.makeText(MainActivity.this, "Crazyradio detached",
-							Toast.LENGTH_SHORT).show();
-					playSound(mSoundDisconnect);
-					if (mCrazyradioLink != null) {
-						Log.d(TAG, "linkDisconnect()");
-						linkDisconnect();
-					}
-				}
-			}
-			if (UsbManager.ACTION_USB_DEVICE_ATTACHED.equals(action)) {
-				UsbDevice device = (UsbDevice) intent
-						.getParcelableExtra(UsbManager.EXTRA_DEVICE);
-				if (device != null && CrazyradioLink.isCrazyradio(device)) {
-					Log.d(TAG, "Crazyradio attached");
-					Toast.makeText(MainActivity.this, "Crazyradio attached",
-							Toast.LENGTH_SHORT).show();
-					playSound(mSoundConnect);
-				}
-			}
-		}
-	};
-
-	private void playSound(int sound) {
-		if (mLoaded) {
-			float volume = 1.0f;
-			mSoundPool.play(sound, volume, volume, 1, 0, 1f);
-		}
 	}
 
 	public IController getController() {
