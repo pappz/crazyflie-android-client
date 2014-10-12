@@ -27,7 +27,6 @@
 
 package se.bitcraze.crazyfliecontrol;
 
-import java.io.IOException;
 import java.util.Locale;
 
 import se.bitcraze.crazyfliecontrol.controller.Controls;
@@ -35,29 +34,18 @@ import se.bitcraze.crazyfliecontrol.controller.GamepadController;
 import se.bitcraze.crazyfliecontrol.controller.GyroscopeController;
 import se.bitcraze.crazyfliecontrol.controller.IController;
 import se.bitcraze.crazyfliecontrol.controller.TouchController;
-import se.bitcraze.crazyflielib.ConnectionAdapter;
 import se.bitcraze.crazyflielib.ConnectionListener;
-import se.bitcraze.crazyflielib.CrazyradioLink;
 import se.bitcraze.crazyflielib.Link;
-import se.bitcraze.crazyflielib.crtp.CommanderPacket;
 import android.app.Activity;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.hardware.SensorManager;
-import android.hardware.usb.UsbDevice;
-import android.hardware.usb.UsbManager;
-import android.media.AudioManager;
-import android.media.SoundPool;
-import android.media.SoundPool.OnLoadCompleteListener;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
-import android.util.Log;
 import android.view.InputDevice;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -68,8 +56,6 @@ import android.widget.Toast;
 import com.MobileAnarchy.Android.Widgets.Joystick.DualJoystickView;
 
 public class MainActivity extends Activity implements ConnectionListener {
-
-	private static final String TAG = "CrazyflieControl";
 
 	private DualJoystickView mDualJoystickView;
 	private FlightDataView mFlightDataView;
