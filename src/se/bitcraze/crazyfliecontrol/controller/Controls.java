@@ -4,6 +4,7 @@ import se.bitcraze.crazyfliecontrol.R;
 import se.bitcraze.crazyfliecontrol.prefs.PreferencesActivity;
 import se.bitcraze.crazyfliecontrol.ui.FlightDataView;
 import se.bitcraze.crazyfliecontrol.ui.MainActivity;
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.widget.Toast;
@@ -17,7 +18,7 @@ public class Controls {
 
     private static final String LOG_TAG = "Controls";
 
-    private MainActivity mActivity;
+    private Context mContext;
     private SharedPreferences mPreferences;
 
     // Raw input values
@@ -53,10 +54,10 @@ public class Controls {
 
     private boolean mUseGyro;
 
-    public Controls(MainActivity activity, SharedPreferences preferences) {
-        this.mActivity = activity;
+    public Controls(Context context, SharedPreferences preferences) {
+        mContext = context;
         this.mPreferences = preferences;
-        setDefaultPreferenceValues(activity.getResources());
+        setDefaultPreferenceValues(context.getResources());
     }
 
     private void setDefaultPreferenceValues(Resources res) {
@@ -130,7 +131,7 @@ public class Controls {
         }
 
         setPreference(prefKey, String.valueOf(axis));
-        Toast.makeText(mActivity, axisName + " Trim: " + FlightDataView.round(axis), Toast.LENGTH_SHORT).show();
+        Toast.makeText(mContext, axisName + " Trim: " + FlightDataView.round(axis), Toast.LENGTH_SHORT).show();
 
         if (PreferencesActivity.KEY_PREF_ROLLTRIM.equals(prefKey)) {
             mRollTrim = axis;

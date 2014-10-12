@@ -27,8 +27,7 @@ public class CrazyflieApp extends Application {
 	public void onCreate() {
 		super.onCreate();
 		context = getApplicationContext();
-		
-		//Should I do it?
+
 		PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
 		preferences = PreferenceManager.getDefaultSharedPreferences(this);
 		
