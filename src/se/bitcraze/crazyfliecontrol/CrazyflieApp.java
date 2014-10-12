@@ -3,6 +3,8 @@ package se.bitcraze.crazyfliecontrol;
 import java.io.IOException;
 
 import se.bitcraze.crazyfliecontrol.controller.IController;
+import se.bitcraze.crazyfliecontrol.prefs.PreferencesActivity;
+import se.bitcraze.crazyfliecontrol.ui.MainActivity;
 import se.bitcraze.crazyflielib.CrazyradioLink;
 import se.bitcraze.crazyflielib.crtp.CommanderPacket;
 import android.app.Application;

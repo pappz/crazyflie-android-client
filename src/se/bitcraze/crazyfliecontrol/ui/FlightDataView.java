@@ -25,9 +25,14 @@
  *
  */
 
-package se.bitcraze.crazyfliecontrol;
+package se.bitcraze.crazyfliecontrol.ui;
 
 import java.math.BigDecimal;
+
+import se.bitcraze.crazyfliecontrol.R;
+import se.bitcraze.crazyfliecontrol.R.id;
+import se.bitcraze.crazyfliecontrol.R.layout;
+import se.bitcraze.crazyfliecontrol.R.string;
 
 import android.content.Context;
 import android.util.AttributeSet;
