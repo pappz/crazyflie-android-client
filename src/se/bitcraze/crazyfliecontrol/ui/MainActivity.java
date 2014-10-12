@@ -128,9 +128,13 @@ public class MainActivity extends Activity implements FlyingDataEvent, Connectio
 	public void onResume() {
 		super.onResume();
 		crazyflieApp.addConnectionListener(this);
+		
 		mControls.setControlConfig();
+		
 		gamepadController.setControlConfig();
+		
 		resetInputMethod();
+		
 		checkScreenLock();
 	}
 
@@ -210,9 +214,8 @@ public class MainActivity extends Activity implements FlyingDataEvent, Connectio
 		return super.dispatchKeyEvent(event);
 	}
 
-	// TODO: improve
 	private void changeToGamepadController() {
-		crazyflieApp.setController(new GamepadController(mControls, this, crazyflieApp), mControls.getXmode());
+		crazyflieApp.setController(gamepadController, mControls.getXmode());
 	}
 
 	private void resetInputMethod() {
