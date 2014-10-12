@@ -3,10 +3,10 @@ package se.bitcraze.crazyfliecontrol.controller;
 import se.bitcraze.crazyfliecontrol.R;
 import se.bitcraze.crazyfliecontrol.prefs.PreferencesActivity;
 import se.bitcraze.crazyfliecontrol.ui.FlightDataView;
-import se.bitcraze.crazyfliecontrol.ui.MainActivity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
+import android.preference.PreferenceManager;
 import android.widget.Toast;
 
 /**
@@ -53,18 +53,26 @@ public class Controls {
     private String mMinThrustDefaultValue;
 
     private boolean mUseGyro;
+    
+    private int mRadioChannel;
+    private int mDataRate;
 
+    private boolean mScreenLock;
+    
     private static Controls INSTANCE = null;
 
-    private Controls(Context context, SharedPreferences preferences) {
+    private Controls(Context context) {
+    	PreferenceManager.setDefaultValues(context, R.xml.preferences, false);
+    	mPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+		
         mContext = context;
-        this.mPreferences = preferences;
         setDefaultPreferenceValues(context.getResources());
+        setControlConfig();
     }
 
-    public static Controls getControlsInstance(Context context, SharedPreferences preferences) {
+    public static Controls getControlsInstance(Context context) {
     	if(INSTANCE == null) {
-    		INSTANCE = new Controls(context, preferences);
+    		INSTANCE = new Controls(context);
     	}
     	return INSTANCE;
     }
@@ -104,8 +112,25 @@ public class Controls {
             this.mMinThrust = Integer.parseInt(mMinThrustDefaultValue);
             this.mXmode = false;
         }
+        
+        mRadioChannel = Integer.parseInt(mPreferences.getString(PreferencesActivity.KEY_PREF_RADIO_CHANNEL, mContext.getString(R.string.preferences_radio_channel_defaultValue)));
+        mDataRate = Integer.parseInt(mPreferences.getString(PreferencesActivity.KEY_PREF_RADIO_DATARATE, mContext.getString(R.string.preferences_radio_datarate_defaultValue)));
+        
+        mScreenLock = mPreferences.getBoolean(PreferencesActivity.KEY_PREF_SCREEN_ROTATION_LOCK_BOOL, false);
     }
 
+    public int getRadioChannel() {
+        return mRadioChannel;
+    }
+    
+    public int getDataRate() {
+    	return mDataRate;
+    }
+    
+    public boolean isScreenLock() {
+    	return mScreenLock;    	
+    }
+    
     public float getRollTrim() {
         return mRollTrim;
     }

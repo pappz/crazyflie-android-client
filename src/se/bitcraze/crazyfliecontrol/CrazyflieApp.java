@@ -3,14 +3,11 @@ package se.bitcraze.crazyfliecontrol;
 import java.io.IOException;
 import se.bitcraze.crazyfliecontrol.controller.Controls;
 import se.bitcraze.crazyfliecontrol.controller.IController;
-import se.bitcraze.crazyfliecontrol.prefs.PreferencesActivity;
 import se.bitcraze.crazyfliecontrol.ui.MainActivity;
 import se.bitcraze.crazyflielib.CrazyradioLink;
 import se.bitcraze.crazyflielib.crtp.CommanderPacket;
 import android.app.Application;
 import android.content.Context;
-import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -19,7 +16,6 @@ public class CrazyflieApp extends Application {
 	
 	Context context;
 	private CrazyradioLink crazyradioLink;
-	private SharedPreferences preferences;
 	private IController controller = null;
 	private Controls controls = null;
 
@@ -27,12 +23,7 @@ public class CrazyflieApp extends Application {
 	public void onCreate() {
 		super.onCreate();
 		context = getApplicationContext();
-
-		PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
-		preferences = PreferenceManager.getDefaultSharedPreferences(this);
-		
-		controls = Controls.getControlsInstance(context, preferences);
-
+		controls = Controls.getControlsInstance(context);
 		crazyradioLink = CrazyradioLink.getCrazyradioLink();
 	}
 	
@@ -65,8 +56,8 @@ public class CrazyflieApp extends Application {
         // ensure previous link is disconnected
         linkDisconnect();
 
-        int radioChannel = Integer.parseInt(preferences.getString(PreferencesActivity.KEY_PREF_RADIO_CHANNEL, getString(R.string.preferences_radio_channel_defaultValue)));
-        int radioDatarate = Integer.parseInt(preferences.getString(PreferencesActivity.KEY_PREF_RADIO_DATARATE, getString(R.string.preferences_radio_datarate_defaultValue)));        	
+        int radioChannel = controls.getRadioChannel();
+        int radioDatarate = controls.getDataRate();
     	
         try {
             // create link
@@ -100,10 +91,6 @@ public class CrazyflieApp extends Application {
 		crazyradioLink.disconnect();
 	}
 	
-	public SharedPreferences getPreferences(){
-		return preferences;
-	}
-
 	public void setController(IController controller){
 		if(this.controller != null ) {
 			controller.disable();

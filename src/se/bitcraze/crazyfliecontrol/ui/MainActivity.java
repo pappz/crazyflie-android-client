@@ -79,7 +79,7 @@ public class MainActivity extends Activity implements FlyingDataEvent, Connectio
 		setContentView(R.layout.activity_main);
 		crazyflieApp = (CrazyflieApp) getApplication();
 
-		controls = Controls.getControlsInstance(this, crazyflieApp.getPreferences());
+		controls = Controls.getControlsInstance(this);
 
 		// Default controller
 		mDualJoystickView = (DualJoystickView) findViewById(R.id.joysticks);
@@ -91,9 +91,7 @@ public class MainActivity extends Activity implements FlyingDataEvent, Connectio
 	}
 	
 	private void checkScreenLock() {
-        boolean isScreenLock = crazyflieApp.getPreferences().getBoolean(PreferencesActivity.KEY_PREF_SCREEN_ROTATION_LOCK_BOOL, false);
-
-		if (isScreenLock || mController instanceof GyroscopeController) {
+		if (controls.isScreenLock() || controls.isUseGyro()) {
 			this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
 		} else {
 			this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
@@ -128,13 +126,9 @@ public class MainActivity extends Activity implements FlyingDataEvent, Connectio
 	public void onResume() {
 		super.onResume();
 		crazyflieApp.addConnectionListener(this);
-		
 		controls.setControlConfig();
-		
 		gamepadController.setControlConfig();
-		
 		resetInputMethod();
-		
 		checkScreenLock();
 	}
 
@@ -234,7 +228,6 @@ public class MainActivity extends Activity implements FlyingDataEvent, Connectio
 	@Override
 	public void connectionInitiated(Link l) {
 		// TODO Auto-generated method stub
-
 	}
 
 	@Override
