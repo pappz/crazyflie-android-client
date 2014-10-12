@@ -86,7 +86,6 @@ public class MainActivity extends Activity implements FlyingDataEvent, Connectio
 
 		// initialize gamepad controller
 		gamepadController = new GamepadController(mControls, this, crazyflieApp);
-		gamepadController.setDefaultPreferenceValues(getResources());
 
 		mFlightDataView = (FlightDataView) findViewById(R.id.flightdataview);
 	}

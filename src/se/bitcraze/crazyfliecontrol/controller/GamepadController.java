@@ -60,6 +60,7 @@ public class GamepadController extends AbstractController {
         super(controls, activity);
         this.mPreferences = crazyflieApp.getPreferences();
         this.mCrazyflieApp = crazyflieApp;
+        setDefaultPreferenceValues(activity.getResources());
     }
 
     public String getControllerName(){
@@ -106,7 +107,7 @@ public class GamepadController extends AbstractController {
         }
     }
     
-    public void setDefaultPreferenceValues(Resources res){
+    private void setDefaultPreferenceValues(Resources res){
         mRightAnalogXAxisDefaultValue = res.getString(R.string.preferences_right_analog_x_axis_defaultValue);
         mRightAnalogYAxisDefaultValue = res.getString(R.string.preferences_right_analog_y_axis_defaultValue);
         mLeftAnalogXAxisDefaultValue = res.getString(R.string.preferences_left_analog_x_axis_defaultValue);
