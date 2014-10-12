@@ -69,7 +69,7 @@ public class MainActivity extends Activity implements FlyingDataEvent, Connectio
 
 	private boolean mDoubleBackToExitPressedOnce = false;
 
-	private Controls mControls;
+	private Controls controls;
 
 	private CrazyflieApp crazyflieApp;
 
@@ -79,13 +79,13 @@ public class MainActivity extends Activity implements FlyingDataEvent, Connectio
 		setContentView(R.layout.activity_main);
 		crazyflieApp = (CrazyflieApp) getApplication();
 
-		mControls = new Controls(this, crazyflieApp.getPreferences());
+		controls = Controls.getControlsInstance(this, crazyflieApp.getPreferences());
 
 		// Default controller
 		mDualJoystickView = (DualJoystickView) findViewById(R.id.joysticks);
 
 		// initialize gamepad controller
-		gamepadController = new GamepadController(mControls, this, crazyflieApp);
+		gamepadController = new GamepadController(controls, this, crazyflieApp);
 
 		mFlightDataView = (FlightDataView) findViewById(R.id.flightdataview);
 	}
@@ -129,7 +129,7 @@ public class MainActivity extends Activity implements FlyingDataEvent, Connectio
 		super.onResume();
 		crazyflieApp.addConnectionListener(this);
 		
-		mControls.setControlConfig();
+		controls.setControlConfig();
 		
 		gamepadController.setControlConfig();
 		
@@ -147,7 +147,7 @@ public class MainActivity extends Activity implements FlyingDataEvent, Connectio
 	@Override
 	protected void onPause() {
 		super.onPause();
-		mControls.resetAxisValues();
+		controls.resetAxisValues();
 		crazyflieApp.linkDisconnect();
 		crazyflieApp.removeConnectionListener(this);
 		crazyflieApp.disableController();
@@ -215,19 +215,19 @@ public class MainActivity extends Activity implements FlyingDataEvent, Connectio
 	}
 
 	private void changeToGamepadController() {
-		crazyflieApp.setController(gamepadController, mControls.getXmode());
+		crazyflieApp.setController(gamepadController, controls.isXmode());
 	}
 
 	private void resetInputMethod() {
 		IController controller;
-		if (mControls.isUseGyro()) {
-			controller = new GyroscopeController(mControls, this,mDualJoystickView, (SensorManager) getSystemService(Context.SENSOR_SERVICE));
+		if (controls.isUseGyro()) {
+			controller = new GyroscopeController(controls, this,mDualJoystickView, (SensorManager) getSystemService(Context.SENSOR_SERVICE));
 		} else {
-			controller = new TouchController(mControls, this, mDualJoystickView);
+			controller = new TouchController(controls, this, mDualJoystickView);
 		}
 		
 		controller.setOnFlyingDataListener(this);
-		crazyflieApp.setController(controller, mControls.getXmode());		
+		crazyflieApp.setController(controller, controls.isXmode());
 	}
 
 	// Connection listener implementations

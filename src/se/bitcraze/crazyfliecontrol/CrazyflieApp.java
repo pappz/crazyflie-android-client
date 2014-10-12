@@ -1,7 +1,7 @@
 package se.bitcraze.crazyfliecontrol;
 
 import java.io.IOException;
-
+import se.bitcraze.crazyfliecontrol.controller.Controls;
 import se.bitcraze.crazyfliecontrol.controller.IController;
 import se.bitcraze.crazyfliecontrol.prefs.PreferencesActivity;
 import se.bitcraze.crazyfliecontrol.ui.MainActivity;
@@ -21,7 +21,7 @@ public class CrazyflieApp extends Application {
 	private CrazyradioLink crazyradioLink;
 	private SharedPreferences preferences;
 	private IController controller = null;
-	private boolean xmode = false;
+	private Controls controls = null;
 
 	@Override
 	public void onCreate() {
@@ -31,6 +31,8 @@ public class CrazyflieApp extends Application {
 		PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
 		preferences = PreferenceManager.getDefaultSharedPreferences(this);
 		
+		controls = Controls.getControlsInstance(context, preferences);
+
 		crazyradioLink = CrazyradioLink.getCrazyradioLink();
 	}
 	
@@ -76,7 +78,7 @@ public class CrazyflieApp extends Application {
                 @Override
                 public void run() {
                     while (crazyradioLink.isConnected()) {                       
-                    	crazyradioLink.send(new CommanderPacket(controller.getRoll(), controller.getPitch(), controller.getYaw(), (char) controller.getThrust(), xmode));
+                    	crazyradioLink.send(new CommanderPacket(controller.getRoll(), controller.getPitch(), controller.getYaw(), (char) controller.getThrust(), controls.isXmode()));
                         try {
                             Thread.sleep(20, 0);
                         } catch (InterruptedException e) {

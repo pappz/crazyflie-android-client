@@ -54,12 +54,21 @@ public class Controls {
 
     private boolean mUseGyro;
 
-    public Controls(Context context, SharedPreferences preferences) {
+    private static Controls INSTANCE = null;
+
+    private Controls(Context context, SharedPreferences preferences) {
         mContext = context;
         this.mPreferences = preferences;
         setDefaultPreferenceValues(context.getResources());
     }
 
+    public static Controls getControlsInstance(Context context, SharedPreferences preferences) {
+    	if(INSTANCE == null) {
+    		INSTANCE = new Controls(context, preferences);
+    	}
+    	return INSTANCE;
+    }
+    
     private void setDefaultPreferenceValues(Resources res) {
         mModeDefaultValue = res.getString(R.string.preferences_mode_defaultValue);
         mDeadzoneDefaultValue = res.getString(R.string.preferences_deadzone_defaultValue);
