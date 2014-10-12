@@ -1,5 +1,6 @@
 package se.bitcraze.crazyfliecontrol.controller;
 
+import se.bitcraze.crazyfliecontrol.CrazyflieApp;
 import se.bitcraze.crazyfliecontrol.R;
 import se.bitcraze.crazyfliecontrol.prefs.PreferencesActivity;
 import se.bitcraze.crazyfliecontrol.ui.MainActivity;
@@ -53,9 +54,12 @@ public class GamepadController extends AbstractController {
     private String mPitchTrimPlusBtnDefaultValue;
     private String mPitchTrimMinusBtnDefaultValue;
 
-    public GamepadController(Controls controls, MainActivity activity, SharedPreferences preferences) {
+	private CrazyflieApp mCrazyflieApp;
+
+    public GamepadController(Controls controls, MainActivity activity, CrazyflieApp crazyflieApp) {
         super(controls, activity);
-        this.mPreferences = preferences;
+        this.mPreferences = crazyflieApp.getPreferences();
+        this.mCrazyflieApp = crazyflieApp;
     }
 
     public String getControllerName(){
@@ -85,9 +89,7 @@ public class GamepadController extends AbstractController {
             if(event.getKeyCode() == mEmergencyBtn){
                 //quick solution
                 mControls.resetAxisValues();
-                if (mActivity.getCrazyflieLink() != null) {
-                    mActivity.linkDisconnect();
-                }
+                mCrazyflieApp.linkDisconnect();                
                 Toast.makeText(mActivity, "Emergency Stop", Toast.LENGTH_SHORT).show();
             }else if (event.getKeyCode() == mRollTrimPlusBtn) {
                 mControls.increaseTrim(PreferencesActivity.KEY_PREF_ROLLTRIM);

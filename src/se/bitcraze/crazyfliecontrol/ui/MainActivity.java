@@ -87,7 +87,7 @@ public class MainActivity extends Activity implements ConnectionListener {
 		mController = new TouchController(mControls, this, mDualJoystickView);
 
 		// initialize gamepad controller
-		mGamepadController = new GamepadController(mControls, this, crazyflieApp.getPreferences());
+		mGamepadController = new GamepadController(mControls, this, crazyflieApp);
 		mGamepadController.setDefaultPreferenceValues(getResources());
 
 		mFlightDataView = (FlightDataView) findViewById(R.id.flightdataview);
