@@ -1,7 +1,5 @@
 package se.bitcraze.crazyfliecontrol.controller;
 
-import se.bitcraze.crazyfliecontrol.ui.MainActivity;
-
 import android.content.Context;
 
 import com.MobileAnarchy.Android.Widgets.Joystick.DualJoystickView;

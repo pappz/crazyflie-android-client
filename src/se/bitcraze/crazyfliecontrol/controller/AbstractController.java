@@ -3,8 +3,6 @@ package se.bitcraze.crazyfliecontrol.controller;
 import android.content.Context;
 import android.widget.Toast;
 import se.bitcraze.crazyfliecontrol.ui.FlyingDataEvent;
-import se.bitcraze.crazyfliecontrol.ui.MainActivity;
-
 
 /**
  * The AbstractController implements the basic methods of IController class

@@ -3,7 +3,6 @@ package se.bitcraze.crazyfliecontrol.controller;
 import se.bitcraze.crazyfliecontrol.CrazyflieApp;
 import se.bitcraze.crazyfliecontrol.R;
 import se.bitcraze.crazyfliecontrol.prefs.PreferencesActivity;
-import se.bitcraze.crazyfliecontrol.ui.MainActivity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Resources;

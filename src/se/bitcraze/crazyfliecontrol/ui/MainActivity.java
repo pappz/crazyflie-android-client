@@ -31,9 +31,6 @@ import java.util.Locale;
 
 import se.bitcraze.crazyfliecontrol.CrazyflieApp;
 import se.bitcraze.crazyfliecontrol.R;
-import se.bitcraze.crazyfliecontrol.R.id;
-import se.bitcraze.crazyfliecontrol.R.layout;
-import se.bitcraze.crazyfliecontrol.R.menu;
 import se.bitcraze.crazyfliecontrol.controller.Controls;
 import se.bitcraze.crazyfliecontrol.controller.GamepadController;
 import se.bitcraze.crazyfliecontrol.controller.GyroscopeController;
