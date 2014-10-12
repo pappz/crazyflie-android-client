@@ -41,6 +41,7 @@ import se.bitcraze.crazyfliecontrol.controller.IController;
 import se.bitcraze.crazyfliecontrol.controller.TouchController;
 import se.bitcraze.crazyfliecontrol.prefs.PreferencesActivity;
 import se.bitcraze.crazyflielib.ConnectionListener;
+import se.bitcraze.crazyflielib.CrazyradioLink;
 import se.bitcraze.crazyflielib.Link;
 import android.app.Activity;
 import android.content.Context;
@@ -111,10 +112,10 @@ public class MainActivity extends Activity implements FlyingDataEvent, Connectio
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case R.id.menu_connect:
-			try {
+			if (CrazyradioLink.getCrazyradioLink().isConnected()) {
+				crazyflieApp.linkDisconnect();
+			} else {
 				crazyflieApp.linkConnect();
-			} catch (IllegalStateException e) {
-				Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
 			}
 			break;
 		case R.id.preferences:

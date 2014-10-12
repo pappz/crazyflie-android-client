@@ -32,8 +32,7 @@ public class CrazyflieApp extends Application {
 		PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
 		preferences = PreferenceManager.getDefaultSharedPreferences(this);
 		
-		crazyradioLink = new CrazyradioLink();
-
+		crazyradioLink = CrazyradioLink.getCrazyradioLink();
 	}
 	
 	@Override
@@ -55,6 +54,10 @@ public class CrazyflieApp extends Application {
 	
 	public void removeConnectionListener(MainActivity mainActivity) {
 		crazyradioLink.removeConnectionListener(mainActivity);
+	}
+	
+	public CrazyradioLink getRadioLink() {
+		return crazyradioLink;
 	}
 	
 	public void linkConnect() {

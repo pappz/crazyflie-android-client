@@ -25,6 +25,8 @@ import android.util.Log;
 
 public class CrazyradioLink extends AbstractLink {
 
+    private static CrazyradioLink crazyradioLinkinstance = null;
+
     /**
      * Vendor ID of the Crazyradio USB dongle.
      */
@@ -78,6 +80,16 @@ public class CrazyradioLink extends AbstractLink {
     private Thread mRadioLinkThread;
 
     private BlockingDeque<CrtpPacket> mSendQueue;
+    
+    private CrazyradioLink() { }
+    
+    public static CrazyradioLink getCrazyradioLink() {
+    	if( crazyradioLinkinstance == null ) {
+    		crazyradioLinkinstance = new CrazyradioLink();
+    	}
+    	
+    	return crazyradioLinkinstance;
+    }
 
     /**
      * Holds information about a specific connection.
