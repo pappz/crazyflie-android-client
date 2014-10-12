@@ -4,6 +4,7 @@ import se.bitcraze.crazyfliecontrol.CrazyflieApp;
 import se.bitcraze.crazyfliecontrol.R;
 import se.bitcraze.crazyfliecontrol.prefs.PreferencesActivity;
 import se.bitcraze.crazyfliecontrol.ui.MainActivity;
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.view.KeyEvent;
@@ -56,11 +57,11 @@ public class GamepadController extends AbstractController {
 
 	private CrazyflieApp mCrazyflieApp;
 
-    public GamepadController(Controls controls, MainActivity activity, CrazyflieApp crazyflieApp) {
-        super(controls, activity);
-        this.mPreferences = crazyflieApp.getPreferences();
+    public GamepadController(Context context, CrazyflieApp crazyflieApp) {
+        super(context);
+        mPreferences = mControls.getPreferences();
         this.mCrazyflieApp = crazyflieApp;
-        setDefaultPreferenceValues(activity.getResources());
+        setDefaultPreferenceValues(mContext.getResources());
     }
 
     public String getControllerName(){
@@ -91,7 +92,7 @@ public class GamepadController extends AbstractController {
                 //quick solution
                 mControls.resetAxisValues();
                 mCrazyflieApp.linkDisconnect();                
-                Toast.makeText(mActivity, "Emergency Stop", Toast.LENGTH_SHORT).show();
+                Toast.makeText(mContext, "Emergency Stop", Toast.LENGTH_SHORT).show();
             }else if (event.getKeyCode() == mRollTrimPlusBtn) {
                 mControls.increaseTrim(PreferencesActivity.KEY_PREF_ROLLTRIM);
             }else if (event.getKeyCode() == mRollTrimMinusBtn) {

@@ -1,5 +1,6 @@
 package se.bitcraze.crazyfliecontrol.controller;
 
+import android.content.Context;
 import android.widget.Toast;
 import se.bitcraze.crazyfliecontrol.ui.FlyingDataEvent;
 import se.bitcraze.crazyfliecontrol.ui.MainActivity;
@@ -14,11 +15,11 @@ public abstract class AbstractController implements IController {
 	private FlyingDataEvent flyingDataEvent;
 	protected Controls mControls;
 	protected boolean mIsDisabled;
-	protected MainActivity mActivity;
+	protected Context mContext;
 
-	public AbstractController(Controls controls, MainActivity activity) {
-		mControls = controls;
-		mActivity = activity;
+	public AbstractController(Context context) {
+		mControls = Controls.getControlsInstance(context);
+		mContext = context;
 	}
 	
 	public void setOnFlyingDataListener(FlyingDataEvent flyingDataListener) {
@@ -27,7 +28,7 @@ public abstract class AbstractController implements IController {
 
 	public void enable(){
 		mIsDisabled = false;
-        Toast.makeText(mActivity, "Using " + getControllerName(), Toast.LENGTH_SHORT).show();
+        Toast.makeText(mContext, "Using " + getControllerName(), Toast.LENGTH_SHORT).show();
 	}
 	
     public void disable() {

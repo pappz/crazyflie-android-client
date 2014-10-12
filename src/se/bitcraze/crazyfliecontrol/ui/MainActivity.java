@@ -85,7 +85,7 @@ public class MainActivity extends Activity implements FlyingDataEvent, Connectio
 		mDualJoystickView = (DualJoystickView) findViewById(R.id.joysticks);
 
 		// initialize gamepad controller
-		gamepadController = new GamepadController(controls, this, crazyflieApp);
+		gamepadController = new GamepadController(getApplicationContext(), crazyflieApp);
 
 		mFlightDataView = (FlightDataView) findViewById(R.id.flightdataview);
 	}
@@ -215,9 +215,9 @@ public class MainActivity extends Activity implements FlyingDataEvent, Connectio
 	private void resetInputMethod() {
 		IController controller;
 		if (controls.isUseGyro()) {
-			controller = new GyroscopeController(controls, this,mDualJoystickView, (SensorManager) getSystemService(Context.SENSOR_SERVICE));
+			controller = new GyroscopeController(getApplicationContext(),mDualJoystickView, (SensorManager) getSystemService(Context.SENSOR_SERVICE));
 		} else {
-			controller = new TouchController(controls, this, mDualJoystickView);
+			controller = new TouchController(getApplicationContext(), mDualJoystickView);
 		}
 		
 		controller.setOnFlyingDataListener(this);

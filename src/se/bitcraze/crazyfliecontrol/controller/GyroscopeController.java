@@ -1,6 +1,7 @@
 package se.bitcraze.crazyfliecontrol.controller;
 
 import se.bitcraze.crazyfliecontrol.ui.MainActivity;
+import android.content.Context;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -24,8 +25,8 @@ public class GyroscopeController extends TouchController implements SensorEventL
     private float mSensorRoll = 0;;
     private float mSensorPitch = 0;;
 
-    public GyroscopeController(Controls controls, MainActivity activity, DualJoystickView dualJoystickView, SensorManager sensorManager) {
-        super(controls, activity, dualJoystickView);
+    public GyroscopeController(Context context, DualJoystickView dualJoystickView, SensorManager sensorManager) {
+        super(context, dualJoystickView);
         mSensorManager = sensorManager;
     }
 

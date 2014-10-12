@@ -77,6 +77,10 @@ public class Controls {
     	return INSTANCE;
     }
     
+    public SharedPreferences getPreferences() {
+    	return mPreferences;
+    }
+    
     private void setDefaultPreferenceValues(Resources res) {
         mModeDefaultValue = res.getString(R.string.preferences_mode_defaultValue);
         mDeadzoneDefaultValue = res.getString(R.string.preferences_deadzone_defaultValue);

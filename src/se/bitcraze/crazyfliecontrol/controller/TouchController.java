@@ -2,6 +2,8 @@ package se.bitcraze.crazyfliecontrol.controller;
 
 import se.bitcraze.crazyfliecontrol.ui.MainActivity;
 
+import android.content.Context;
+
 import com.MobileAnarchy.Android.Widgets.Joystick.DualJoystickView;
 import com.MobileAnarchy.Android.Widgets.Joystick.JoystickMovedListener;
 
@@ -19,8 +21,8 @@ public class TouchController extends AbstractController {
 
     protected DualJoystickView dualJoystickView;
 
-    public TouchController(Controls controls, MainActivity activity, DualJoystickView dualJoystickview) {
-        super(controls, activity);
+    public TouchController(Context context, DualJoystickView dualJoystickview) {
+        super(context);
         this.dualJoystickView = dualJoystickview;
         this.dualJoystickView.setMovementRange(mResolution, mResolution);
     }
