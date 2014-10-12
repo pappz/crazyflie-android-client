@@ -80,7 +80,6 @@ public class MainActivity extends Activity implements FlyingDataEvent, Connectio
 		crazyflieApp = (CrazyflieApp) getApplication();
 
 		mControls = new Controls(this, crazyflieApp.getPreferences());
-		mControls.setDefaultPreferenceValues(getResources());
 
 		// Default controller
 		mDualJoystickView = (DualJoystickView) findViewById(R.id.joysticks);

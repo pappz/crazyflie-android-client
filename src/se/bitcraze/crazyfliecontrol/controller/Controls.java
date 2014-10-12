@@ -56,9 +56,10 @@ public class Controls {
     public Controls(MainActivity activity, SharedPreferences preferences) {
         this.mActivity = activity;
         this.mPreferences = preferences;
+        setDefaultPreferenceValues(activity.getResources());
     }
 
-    public void setDefaultPreferenceValues(Resources res) {
+    private void setDefaultPreferenceValues(Resources res) {
         mModeDefaultValue = res.getString(R.string.preferences_mode_defaultValue);
         mDeadzoneDefaultValue = res.getString(R.string.preferences_deadzone_defaultValue);
 
