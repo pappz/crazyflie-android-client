@@ -20,7 +20,7 @@ public class CrazyflieApp extends Application {
 	Context context;
 	private CrazyradioLink crazyradioLink;
 	private SharedPreferences preferences;
-	private IController mController;
+	private IController controller = null;
 	private boolean xmode = false;
 
 	@Override
@@ -74,7 +74,7 @@ public class CrazyflieApp extends Application {
                 @Override
                 public void run() {
                     while (crazyradioLink.isConnected()) {                       
-                    	crazyradioLink.send(new CommanderPacket(mController.getRoll(), mController.getPitch(), mController.getYaw(), (char) mController.getThrust(), xmode));
+                    	crazyradioLink.send(new CommanderPacket(controller.getRoll(), controller.getPitch(), controller.getYaw(), (char) controller.getThrust(), xmode));
                         try {
                             Thread.sleep(20, 0);
                         } catch (InterruptedException e) {
@@ -101,10 +101,18 @@ public class CrazyflieApp extends Application {
 	}
 
 	public void setController(IController controller, boolean x){
-		mController = controller;
-		xmode = x;
-		mController.enable();
+		if(this.controller != null ) {
+			controller.disable();
+		}
+		
+		this.controller = controller;
+		this.controller.enable();
+		xmode = x;		
 	}
 	
-
+	public void disableController() {
+		if(controller != null) {
+			controller.disable();
+		}
+	}
 }

@@ -64,8 +64,7 @@ public class MainActivity extends Activity implements FlyingDataEvent, Connectio
 	private DualJoystickView mDualJoystickView;
 	private FlightDataView mFlightDataView;
 
-	private IController mController;
-	private GamepadController mGamepadController;
+	private GamepadController gamepadController;
 
 	private boolean mDoubleBackToExitPressedOnce = false;
 
@@ -84,11 +83,10 @@ public class MainActivity extends Activity implements FlyingDataEvent, Connectio
 
 		// Default controller
 		mDualJoystickView = (DualJoystickView) findViewById(R.id.joysticks);
-		mController = new TouchController(mControls, this, mDualJoystickView);
 
 		// initialize gamepad controller
-		mGamepadController = new GamepadController(mControls, this, crazyflieApp);
-		mGamepadController.setDefaultPreferenceValues(getResources());
+		gamepadController = new GamepadController(mControls, this, crazyflieApp);
+		gamepadController.setDefaultPreferenceValues(getResources());
 
 		mFlightDataView = (FlightDataView) findViewById(R.id.flightdataview);
 	}
@@ -131,9 +129,8 @@ public class MainActivity extends Activity implements FlyingDataEvent, Connectio
 	public void onResume() {
 		super.onResume();
 		crazyflieApp.addConnectionListener(this);
-		// TODO: improve
 		mControls.setControlConfig();
-		mGamepadController.setControlConfig();
+		gamepadController.setControlConfig();
 		resetInputMethod();
 		checkScreenLock();
 	}
@@ -150,7 +147,7 @@ public class MainActivity extends Activity implements FlyingDataEvent, Connectio
 		mControls.resetAxisValues();
 		crazyflieApp.linkDisconnect();
 		crazyflieApp.removeConnectionListener(this);
-		mController.disable();
+		crazyflieApp.disableController();
 	}
 
 	@Override
@@ -183,11 +180,11 @@ public class MainActivity extends Activity implements FlyingDataEvent, Connectio
 		// event could be almost anything.
 		if ((event.getSource() & InputDevice.SOURCE_CLASS_JOYSTICK) != 0
 				&& event.getAction() == MotionEvent.ACTION_MOVE) {
-			if (!(mController instanceof GamepadController)) {
+			if (gamepadController.isDisabled()) {
 				changeToGamepadController();
 			}
-			mGamepadController.dealWithMotionEvent(event);
-			updateFlightData();
+			
+			gamepadController.dealWithMotionEvent(event);
 			return true;
 		} else {
 			return super.dispatchGenericMotionEvent(event);
@@ -201,10 +198,11 @@ public class MainActivity extends Activity implements FlyingDataEvent, Connectio
 		// do not call super if key event comes from a gamepad, otherwise the
 		// buttons can quit the app
 		if (event.getSource() == 1281) {
-			if (!(mController instanceof GamepadController)) {
+			if (gamepadController.isDisabled()) {
 				changeToGamepadController();
 			}
-			mGamepadController.dealWithKeyEvent(event);
+			
+			gamepadController.dealWithKeyEvent(event);
 			// exception for OUYA controllers
 			if (!Build.MODEL.toUpperCase(Locale.getDefault()).contains("OUYA")) {
 				return true;
@@ -215,28 +213,19 @@ public class MainActivity extends Activity implements FlyingDataEvent, Connectio
 
 	// TODO: improve
 	private void changeToGamepadController() {
-		if (!((TouchController) mController).isDisabled()) {
-			((TouchController) mController).disable();
-		}
-		mController = mGamepadController;
-		mController.enable();
+		crazyflieApp.setController(new GamepadController(mControls, this, crazyflieApp), mControls.getXmode());
 	}
 
 	private void resetInputMethod() {
-		// TODO: reuse existing touch controller?
-
-		// Use GyroscopeController if activated in the preferences
+		IController controller;
 		if (mControls.isUseGyro()) {
-			mController = new GyroscopeController(mControls, this,
-					mDualJoystickView,
-					(SensorManager) getSystemService(Context.SENSOR_SERVICE));
+			controller = new GyroscopeController(mControls, this,mDualJoystickView, (SensorManager) getSystemService(Context.SENSOR_SERVICE));
 		} else {
-			mController = new TouchController(mControls, this,
-					mDualJoystickView);
+			controller = new TouchController(mControls, this, mDualJoystickView);
 		}
 		
-		mController.setOnFlyingDataListener(this);
-		crazyflieApp.setController(mController, mControls.getXmode());		
+		controller.setOnFlyingDataListener(this);
+		crazyflieApp.setController(controller, mControls.getXmode());		
 	}
 
 	// Connection listener implementations
@@ -255,7 +244,7 @@ public class MainActivity extends Activity implements FlyingDataEvent, Connectio
 						"Connection Setup finished", Toast.LENGTH_SHORT).show();
 			}
 		});
-		mController.enable();
+		resetInputMethod();
 	}
 
 	@Override
@@ -267,7 +256,7 @@ public class MainActivity extends Activity implements FlyingDataEvent, Connectio
                 mFlightDataView.setLinkQualityText("n/a");
             }
         });
-        mController.disable();
+		crazyflieApp.disableController();
 	}
 
 	@Override
@@ -278,7 +267,7 @@ public class MainActivity extends Activity implements FlyingDataEvent, Connectio
 				Toast.makeText(getApplicationContext(), "Connection lost", Toast.LENGTH_SHORT).show();
 			}
 		});
-	    mController.disable();
+		crazyflieApp.disableController();
 	}
 
 	@Override
@@ -289,7 +278,7 @@ public class MainActivity extends Activity implements FlyingDataEvent, Connectio
                 Toast.makeText(getApplicationContext(), "Connection failed", Toast.LENGTH_SHORT).show();
             }
         });
-        mController.disable();
+		crazyflieApp.disableController();
 	}
 
 	@Override
