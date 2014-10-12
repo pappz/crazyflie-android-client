@@ -103,6 +103,7 @@ public class CrazyflieApp extends Application {
 	public void setController(IController controller, boolean x){
 		mController = controller;
 		xmode = x;
+		mController.enable();
 	}
 	
 

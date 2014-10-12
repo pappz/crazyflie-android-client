@@ -1,7 +1,11 @@
 package se.bitcraze.crazyfliecontrol.controller;
 
-public interface IController {
+import se.bitcraze.crazyfliecontrol.ui.FlyingDataEvent;
 
+public interface IController {
+	
+	public void setOnFlyingDataListener(FlyingDataEvent flyingDataListener);
+	
     public float getThrust();
 
     public float getRoll();

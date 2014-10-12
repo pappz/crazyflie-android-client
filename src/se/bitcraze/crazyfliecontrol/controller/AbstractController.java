@@ -1,6 +1,7 @@
 package se.bitcraze.crazyfliecontrol.controller;
 
 import android.widget.Toast;
+import se.bitcraze.crazyfliecontrol.ui.FlyingDataEvent;
 import se.bitcraze.crazyfliecontrol.ui.MainActivity;
 
 
@@ -10,6 +11,7 @@ import se.bitcraze.crazyfliecontrol.ui.MainActivity;
  */
 public abstract class AbstractController implements IController {
 
+	private FlyingDataEvent flyingDataEvent;
 	protected Controls mControls;
 	protected boolean mIsDisabled;
 	protected MainActivity mActivity;
@@ -17,6 +19,10 @@ public abstract class AbstractController implements IController {
 	public AbstractController(Controls controls, MainActivity activity) {
 		mControls = controls;
 		mActivity = activity;
+	}
+	
+	public void setOnFlyingDataListener(FlyingDataEvent flyingDataListener) {
+		flyingDataEvent = flyingDataListener;
 	}
 
 	public void enable(){
@@ -37,7 +43,7 @@ public abstract class AbstractController implements IController {
     }
     
     public void updateFlightData() {
-        mActivity.updateFlightData();
+    	flyingDataEvent.flyingDataEvent(getPitch(), getRoll(), getThrust(), getYaw());
 	}
     
     public float getThrust() {

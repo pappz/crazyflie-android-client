@@ -59,7 +59,7 @@ import android.widget.Toast;
 
 import com.MobileAnarchy.Android.Widgets.Joystick.DualJoystickView;
 
-public class MainActivity extends Activity implements ConnectionListener {
+public class MainActivity extends Activity implements FlyingDataEvent, ConnectionListener {
 
 	private DualJoystickView mDualJoystickView;
 	private FlightDataView mFlightDataView;
@@ -172,11 +172,9 @@ public class MainActivity extends Activity implements ConnectionListener {
 		}, 2000);
 	}
 
-	// TODO: fix indirection
-	public void updateFlightData() {
-		mFlightDataView.updateFlightData(mController.getPitch(),
-				mController.getRoll(), mController.getThrust(),
-				mController.getYaw());
+	@Override
+	public void flyingDataEvent(float pitch, float roll, float thrust, float yaw) {
+		mFlightDataView.updateFlightData(pitch, roll, thrust, yaw);
 	}
 
 	@Override
@@ -217,8 +215,8 @@ public class MainActivity extends Activity implements ConnectionListener {
 
 	// TODO: improve
 	private void changeToGamepadController() {
-		if (!((TouchController) getController()).isDisabled()) {
-			((TouchController) getController()).disable();
+		if (!((TouchController) mController).isDisabled()) {
+			((TouchController) mController).disable();
 		}
 		mController = mGamepadController;
 		mController.enable();
@@ -236,11 +234,9 @@ public class MainActivity extends Activity implements ConnectionListener {
 			mController = new TouchController(mControls, this,
 					mDualJoystickView);
 		}
-		mController.enable();
-	}
-
-	public IController getController() {
-		return mController;
+		
+		mController.setOnFlyingDataListener(this);
+		crazyflieApp.setController(mController, mControls.getXmode());		
 	}
 
 	// Connection listener implementations
