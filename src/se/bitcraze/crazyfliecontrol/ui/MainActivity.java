@@ -215,7 +215,7 @@ public class MainActivity extends Activity implements FlyingDataEvent, Connectio
 	}
 
 	private void changeToGamepadController() {
-		crazyflieApp.setController(gamepadController, controls.isXmode());
+		crazyflieApp.setController(gamepadController);
 	}
 
 	private void resetInputMethod() {
@@ -227,7 +227,7 @@ public class MainActivity extends Activity implements FlyingDataEvent, Connectio
 		}
 		
 		controller.setOnFlyingDataListener(this);
-		crazyflieApp.setController(controller, controls.isXmode());
+		crazyflieApp.setController(controller);
 	}
 
 	// Connection listener implementations

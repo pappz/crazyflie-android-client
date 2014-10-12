@@ -104,14 +104,13 @@ public class CrazyflieApp extends Application {
 		return preferences;
 	}
 
-	public void setController(IController controller, boolean x){
+	public void setController(IController controller){
 		if(this.controller != null ) {
 			controller.disable();
 		}
 		
 		this.controller = controller;
 		this.controller.enable();
-		xmode = x;		
 	}
 	
 	public void disableController() {
