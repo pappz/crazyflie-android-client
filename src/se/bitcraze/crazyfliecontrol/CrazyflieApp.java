@@ -93,6 +93,10 @@ public class CrazyflieApp extends Application {
 	public void linkDisconnect() {
 		crazyradioLink.disconnect();
 	}
+	
+	public SharedPreferences getPreferences(){
+		return preferences;
+	}
 
 	public void setController(IController controller, boolean x){
 		mController = controller;

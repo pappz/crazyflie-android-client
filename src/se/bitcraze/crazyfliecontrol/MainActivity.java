@@ -60,8 +60,6 @@ public class MainActivity extends Activity implements ConnectionListener {
 	private DualJoystickView mDualJoystickView;
 	private FlightDataView mFlightDataView;
 
-	private SharedPreferences mPreferences;
-
 	private IController mController;
 	private GamepadController mGamepadController;
 
@@ -77,9 +75,7 @@ public class MainActivity extends Activity implements ConnectionListener {
 		setContentView(R.layout.activity_main);
 		crazyflieApp = (CrazyflieApp) getApplication();
 
-		setDefaultPreferenceValues();
-
-		mControls = new Controls(this, mPreferences);
+		mControls = new Controls(this, crazyflieApp.getPreferences());
 		mControls.setDefaultPreferenceValues(getResources());
 
 		// Default controller
@@ -87,23 +83,15 @@ public class MainActivity extends Activity implements ConnectionListener {
 		mController = new TouchController(mControls, this, mDualJoystickView);
 
 		// initialize gamepad controller
-		mGamepadController = new GamepadController(mControls, this,
-				mPreferences);
+		mGamepadController = new GamepadController(mControls, this, crazyflieApp.getPreferences());
 		mGamepadController.setDefaultPreferenceValues(getResources());
 
 		mFlightDataView = (FlightDataView) findViewById(R.id.flightdataview);
 	}
-
-	private void setDefaultPreferenceValues() {
-		// Set default preference values
-		PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
-		// Initialize preferences
-		mPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-	}
-
+	
 	private void checkScreenLock() {
-		boolean isScreenLock = mPreferences.getBoolean(
-				PreferencesActivity.KEY_PREF_SCREEN_ROTATION_LOCK_BOOL, false);
+        boolean isScreenLock = crazyflieApp.getPreferences().getBoolean(PreferencesActivity.KEY_PREF_SCREEN_ROTATION_LOCK_BOOL, false);
+
 		if (isScreenLock || mController instanceof GyroscopeController) {
 			this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
 		} else {
