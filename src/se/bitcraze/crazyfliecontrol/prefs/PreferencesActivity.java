@@ -28,9 +28,6 @@
 package se.bitcraze.crazyfliecontrol.prefs;
 
 import se.bitcraze.crazyfliecontrol.R;
-import se.bitcraze.crazyfliecontrol.R.array;
-import se.bitcraze.crazyfliecontrol.R.string;
-import se.bitcraze.crazyfliecontrol.R.xml;
 import se.bitcraze.crazyfliecontrol.prefs.SelectConnectionDialogFragment.SelectCrazyflieDialogListener;
 import se.bitcraze.crazyflielib.CrazyradioLink;
 import se.bitcraze.crazyflielib.CrazyradioLink.ConnectionData;

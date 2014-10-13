@@ -3,7 +3,6 @@ package se.bitcraze.crazyfliecontrol.prefs;
 import java.util.List;
 
 import se.bitcraze.crazyfliecontrol.R;
-import se.bitcraze.crazyfliecontrol.R.string;
 
 import android.app.AlertDialog.Builder;
 import android.content.Context;

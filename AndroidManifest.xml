@@ -27,8 +27,8 @@
             </intent-filter>
         </activity>
         
-        <activity android:name="PreferencesActivity">
-            <meta-data android:value="se.bitcraze.crazyfliecontrol.MainActivity" android:name="android.support.PARENT_ACTIVITY"/>
+        <activity android:name=".prefs.PreferencesActivity">
+            <meta-data android:value="se.bitcraze.crazyfliecontrol.ui.MainActivity" android:name="android.support.PARENT_ACTIVITY"/>
         </activity>
         
         <receiver android:name="se.bitcraze.crazyflie.USBReceiver" >
