@@ -79,7 +79,7 @@
     <string name="select_connection_dialog_title">Select Connection</string>
     <string name="pitch">Pitch: %1$s</string>
     <string name="roll">Roll: %1$s</string>
-    <string name="thrust">Thrust: %1$s</string>
+    <string name="thrust">Thrust: %1$s %%</string>
     <string name="yaw">Yaw: %1$s</string>
     <string name="linkQuality">Link: %1$s</string>
 
