@@ -140,7 +140,7 @@ public class MainActivity extends Activity implements FlyingDataEvent, Connectio
 		super.onPause();
 		controls.resetAxisValues();
 		crazyflieApp.linkDisconnect();
-		crazyflieApp.removeConnectionListener(this);
+		crazyflieApp.removeConnectionListener(this);		
 		crazyflieApp.disableController();
 	}
 

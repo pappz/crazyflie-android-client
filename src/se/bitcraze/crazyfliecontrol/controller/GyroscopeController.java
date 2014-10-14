@@ -5,6 +5,7 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.util.Log;
 
 import com.MobileAnarchy.Android.Widgets.Joystick.DualJoystickView;
 
@@ -15,47 +16,76 @@ import com.MobileAnarchy.Android.Widgets.Joystick.DualJoystickView;
  * to the chosen "mode" setting.
  * 
  */
-public class GyroscopeController extends TouchController implements SensorEventListener {
+public class GyroscopeController extends TouchController {
 
     private SensorManager mSensorManager;
+    private Sensor sensor = null;
+    private SensorEventListener seListener = null;    
 
-    private int AMPLIFICATION = 2;
-
-    private float mSensorRoll = 0;;
-    private float mSensorPitch = 0;;
+    private float mSensorRoll = 0;
+    private float mSensorPitch = 0;
 
     public GyroscopeController(Context context, DualJoystickView dualJoystickView, SensorManager sensorManager) {
         super(context, dualJoystickView);
         mSensorManager = sensorManager;
+        
+        if(mSensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR)!=null) {
+        	sensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR);
+        	seListener = new RotationVectorListener();
+        	
+        } else {
+        	sensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        	seListener = new AccelerometerListener();
+        }
     }
-
+        
     @Override
     public void enable() {
         super.enable();
-        mSensorManager.registerListener(this, mSensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR), SensorManager.SENSOR_DELAY_UI);
+        mSensorManager.registerListener(seListener, sensor, SensorManager.SENSOR_DELAY_GAME);
     }
 
     @Override
     public void disable() {
+        mSensorManager.unregisterListener(seListener);
         super.disable();
-        mSensorManager.unregisterListener(this);
     }
-
+    
     public String getControllerName() {
         return "gyroscope controller";
     }
+    
+    class AccelerometerListener implements SensorEventListener {
 
-    @Override
-    public void onAccuracyChanged(Sensor arg0, int arg1) {
-    }
+    	@Override
+    	public void onAccuracyChanged(Sensor arg0, int arg1) {		
+    	}
 
-    @Override
-    public void onSensorChanged(SensorEvent event) {
-        // amplifying the sensitivity.
-        mSensorRoll = event.values[0] * AMPLIFICATION;
-        mSensorPitch = event.values[1] * AMPLIFICATION;
-        updateFlightData();
+    	@Override
+    	public void onSensorChanged(SensorEvent event) {
+    		// TODO Auto-generated method stub
+    		mSensorPitch = (event.values[0] / 10 ) * -1;
+    		mSensorRoll = event.values[1] / 10;       
+            updateFlightData();
+    	}    	
     }
+    
+    class RotationVectorListener implements SensorEventListener {
+    	private int AMPLIFICATION = 2;
+    	
+    	@Override
+    	public void onAccuracyChanged(Sensor arg0, int arg1) { }
+
+    	@Override
+    	public void onSensorChanged(SensorEvent event) {
+    		// TODO Auto-generated method stub
+            // amplifying the sensitivity.
+        	Log.d("Crazyflie: ","Sensor: "+Float.toString(event.values[0])+" - "+Float.toString(event.values[1]));
+            mSensorRoll = event.values[0] * AMPLIFICATION;
+            mSensorPitch = event.values[1] * AMPLIFICATION;
+            updateFlightData();
+    	}    	
+    }      
 
     // overwrite getRoll() and getPitch() to only use values from gyro sensors
     public float getRoll() {
@@ -66,6 +96,5 @@ public class GyroscopeController extends TouchController implements SensorEventL
     public float getPitch() {
         float pitch = mSensorPitch;
         return (pitch + mControls.getPitchTrim()) * mControls.getRollPitchFactor() * mControls.getDeadzone(pitch);
-    }
-
+    }    
 }

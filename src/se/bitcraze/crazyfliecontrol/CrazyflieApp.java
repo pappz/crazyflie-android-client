@@ -1,6 +1,7 @@
 package se.bitcraze.crazyfliecontrol;
 
 import java.io.IOException;
+
 import se.bitcraze.crazyfliecontrol.controller.Controls;
 import se.bitcraze.crazyfliecontrol.controller.IController;
 import se.bitcraze.crazyfliecontrol.ui.MainActivity;
@@ -16,7 +17,7 @@ public class CrazyflieApp extends Application {
 	
 	Context context;
 	private CrazyradioLink crazyradioLink;
-	private IController controller = null;
+	private IController mController = null;
 	private Controls controls = null;
 
 	@Override
@@ -69,7 +70,7 @@ public class CrazyflieApp extends Application {
                 @Override
                 public void run() {
                     while (crazyradioLink.isConnected()) {                       
-                    	crazyradioLink.send(new CommanderPacket(controller.getRoll(), controller.getPitch(), controller.getYaw(), (char) controller.getThrust(), controls.isXmode()));
+                    	crazyradioLink.send(new CommanderPacket(mController.getRoll(), mController.getPitch(), mController.getYaw(), (char) mController.getThrust(), controls.isXmode()));
                         try {
                             Thread.sleep(20, 0);
                         } catch (InterruptedException e) {
@@ -92,17 +93,17 @@ public class CrazyflieApp extends Application {
 	}
 	
 	public void setController(IController controller){
-		if(this.controller != null ) {
-			controller.disable();
+		if(this.mController != null ) {
+			this.mController.disable();
 		}
 		
-		this.controller = controller;
-		this.controller.enable();
+		this.mController = controller;
+		this.mController.enable();
 	}
 	
 	public void disableController() {
-		if(controller != null) {
-			controller.disable();
+		if(mController != null) {
+			mController.disable();
 		}
 	}
 }
