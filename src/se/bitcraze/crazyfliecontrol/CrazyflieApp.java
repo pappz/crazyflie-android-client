@@ -33,7 +33,7 @@ public class CrazyflieApp extends Application {
 	}
 	
 	public void crazyradioDetached() {
-		crazyradioLink.disconnect();
+		linkDisconnect();
 	}
 	
 	public void crazyradioAttached() {
@@ -88,7 +88,9 @@ public class CrazyflieApp extends Application {
     }
 	
 	public void linkDisconnect() {
-		crazyradioLink.disconnect();
+		if (crazyradioLink != null) {
+            crazyradioLink.disconnect();
+        }
 	}
 	
 	public void setController(IController controller){

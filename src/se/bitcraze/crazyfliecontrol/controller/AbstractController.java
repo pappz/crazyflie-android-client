@@ -26,7 +26,6 @@ public abstract class AbstractController implements IController {
 
 	public void enable(){
 		mIsDisabled = false;
-        Toast.makeText(mContext, "Using " + getControllerName(), Toast.LENGTH_SHORT).show();
 	}
 	
     public void disable() {
