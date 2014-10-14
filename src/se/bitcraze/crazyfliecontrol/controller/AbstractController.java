@@ -45,8 +45,25 @@ public abstract class AbstractController implements IController {
     	flyingDataEvent.flyingDataEvent(getPitch(), getRoll(), getThrust(), getYaw());
 	}
     
+    public void setHoverMode() {
+    	
+    }
+    
     public float getThrust() {
         float thrust = ((mControls.getMode() == 1 || mControls.getMode() == 3) ? mControls.getRightAnalog_Y() : mControls.getLeftAnalog_Y());
+        
+        //Hover mode
+        if(mControls.getHoverMode()) {
+        	if(thrust == 1) {
+        		return 65535;
+        	} else if( thrust == -1) {
+        		return 0;
+        	} else {
+        		return 32767;
+        	}
+        	
+        }
+        
         if (thrust > mControls.getDeadzone()) {
             return (mControls.getMinThrust() + (thrust * mControls.getThrustFactor()))/100 * 65535;
         }

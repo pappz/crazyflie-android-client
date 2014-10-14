@@ -60,6 +60,8 @@ public class Controls {
     private boolean mScreenLock;
     
     private static Controls INSTANCE = null;
+    
+    private boolean hoverMode = false;
 
     private Controls(Context context) {
     	PreferenceManager.setDefaultValues(context, R.xml.preferences, false);
@@ -121,6 +123,14 @@ public class Controls {
         mDataRate = Integer.parseInt(mPreferences.getString(PreferencesActivity.KEY_PREF_RADIO_DATARATE, mContext.getString(R.string.preferences_radio_datarate_defaultValue)));
         
         mScreenLock = mPreferences.getBoolean(PreferencesActivity.KEY_PREF_SCREEN_ROTATION_LOCK_BOOL, false);
+    }
+    
+    public boolean getHoverMode() {
+    	return hoverMode;
+    }
+    
+    public void setHoverMode(boolean hover) {
+    	hoverMode = hover;
     }
 
     public int getRadioChannel() {

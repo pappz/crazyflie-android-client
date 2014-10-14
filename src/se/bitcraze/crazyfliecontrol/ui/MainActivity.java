@@ -56,6 +56,7 @@ import android.view.MotionEvent;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.Toast;
+import android.widget.ToggleButton;
 
 import com.MobileAnarchy.Android.Widgets.Joystick.DualJoystickView;
 
@@ -87,6 +88,8 @@ public class MainActivity extends Activity implements FlyingDataEvent, Connectio
 		gamepadController = new GamepadController(getApplicationContext(), crazyflieApp);
 
 		mFlightDataView = (FlightDataView) findViewById(R.id.flightdataview);
+		
+		((ToggleButton) findViewById(R.id.hovermode)).setOnCheckedChangeListener(this);
 	}
 	
 	private void checkScreenLock() {
@@ -111,6 +114,7 @@ public class MainActivity extends Activity implements FlyingDataEvent, Connectio
 				crazyflieApp.linkDisconnect();
 			} else {
 				crazyflieApp.linkConnect();
+				switchHoverMode(false);
 			}
 			break;
 		case R.id.preferences:
@@ -129,6 +133,9 @@ public class MainActivity extends Activity implements FlyingDataEvent, Connectio
 		gamepadController.setControlConfig();
 		resetInputMethod();
 		checkScreenLock();
+		
+		//Reset the hover mode		
+		switchHoverMode(false);
 	}
 
 	@Override
@@ -148,7 +155,15 @@ public class MainActivity extends Activity implements FlyingDataEvent, Connectio
 	
 	@Override
 	public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-		//crazyflieApp.getRadioLink().param.setHoverModer(isChecked);
+		switchHoverMode(isChecked);
+	}
+	
+	private void switchHoverMode(boolean hover){
+		//Send the info
+		crazyflieApp.getRadioLink().getParam().setHoverMode(hover);
+		//store the state
+		controls.setHoverMode(hover);
+		((ToggleButton) findViewById(R.id.hovermode)).setChecked(hover);
 	}
 	
 	@Override
@@ -172,7 +187,10 @@ public class MainActivity extends Activity implements FlyingDataEvent, Connectio
 
 	@Override
 	public void flyingDataEvent(float pitch, float roll, float thrust, float yaw) {
-		mFlightDataView.updateFlightData(pitch, roll, thrust/(65535/100), yaw);
+		if(!controls.getHoverMode())
+			mFlightDataView.updateFlightData(pitch, roll, thrust/(65535/100), yaw);
+		else
+			mFlightDataView.updateFlightData(pitch, roll, (int) thrust, yaw);
 	}
 
 	@Override

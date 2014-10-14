@@ -83,5 +83,7 @@
     <string name="yaw">Yaw: %1$s</string>
     <string name="linkQuality">Link: %1$s</string>
     <string name="hover">Hover</string>
+    <string name="up">Up</string>
+    <string name="down">Down</string>
 
 </resources>

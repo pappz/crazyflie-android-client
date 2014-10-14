@@ -81,7 +81,11 @@ public class CrazyradioLink extends AbstractLink {
 
     private BlockingDeque<CrtpPacket> mSendQueue;
     
-    private CrazyradioLink() { }
+    private static Param param;
+    
+    private CrazyradioLink() {
+    	param = new Param(this);
+    }
     
     public static CrazyradioLink getCrazyradioLink() {
     	if( crazyradioLinkinstance == null ) {
@@ -135,6 +139,10 @@ public class CrazyradioLink extends AbstractLink {
         this.mSendQueue = new LinkedBlockingDeque<CrtpPacket>();
     }
 
+    public Param getParam() {
+    	return param;
+    }
+    
     /**
      * Initialize the USB device. Determines endpoints and prepares
      * communication.

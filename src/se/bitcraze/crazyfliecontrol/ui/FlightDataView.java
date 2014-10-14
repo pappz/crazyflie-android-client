@@ -80,6 +80,20 @@ public class FlightDataView extends LinearLayout {
         mTextView_thrust.setText(format(R.string.thrust, round(thrust)));
         mTextView_yaw.setText(format(R.string.yaw, round(yaw)));
     }
+    
+    public void updateFlightData(float pitch, float roll, int hover, float yaw) {
+        mTextView_pitch.setText(format(R.string.pitch, round(pitch)));
+        mTextView_roll.setText(format(R.string.roll, round(roll)));
+        if(hover == 65535) {
+            mTextView_thrust.setText(R.string.up);
+        }else if (hover == 0){
+        	mTextView_thrust.setText(R.string.down);
+        } else {
+        	mTextView_thrust.setText(R.string.hover);
+        }
+        mTextView_yaw.setText(format(R.string.yaw, round(yaw)));
+    }
+
 
     private String format(int identifier, Object o){
         return String.format(getResources().getString(identifier), o);
