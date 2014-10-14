@@ -53,17 +53,10 @@ public class USBReceiver  extends BroadcastReceiver{
                 Log.d(TAG, "Crazyradio detached");
                 Toast.makeText(context, "Crazyradio detached", Toast.LENGTH_SHORT).show();
                 playSound(mSoundDisconnect);
-                /*
-                if (mCrazyradioLink != null) {
-                    Log.d(TAG, "linkDisconnect()");
-                    linkDisconnect();
-                }
-                */
                 crazyflieApp.crazyradioDetached();
             }
         }
         if (UsbManager.ACTION_USB_DEVICE_ATTACHED.equals(action)) {
-        	Log.d(TAG, "harmadik");
             UsbDevice device = (UsbDevice) intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
             if (device != null && CrazyradioLink.isCrazyradio(device)) {
                 Log.d(TAG, "Crazyradio attached");

@@ -31,7 +31,7 @@
             <meta-data android:value="se.bitcraze.crazyfliecontrol.ui.MainActivity" android:name="android.support.PARENT_ACTIVITY"/>
         </activity>
         
-        <receiver android:name="se.bitcraze.crazyflie.USBReceiver" >
+        <receiver android:name="se.bitcraze.crazyfliecontrol.USBReceiver" >
     	<intent-filter >
         	<action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
         	<action android:name="android.hardware.usb.action.USB_DEVICE_DETACHED" />

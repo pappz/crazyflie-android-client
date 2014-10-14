@@ -165,7 +165,7 @@ public class MainActivity extends Activity implements FlyingDataEvent, Connectio
 
 	@Override
 	public void flyingDataEvent(float pitch, float roll, float thrust, float yaw) {
-		mFlightDataView.updateFlightData(pitch, roll, thrust, yaw);
+		mFlightDataView.updateFlightData(pitch, roll, thrust/(65535/100), yaw);
 	}
 
 	@Override

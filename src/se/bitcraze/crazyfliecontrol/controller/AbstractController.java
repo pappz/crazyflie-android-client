@@ -1,6 +1,7 @@
 package se.bitcraze.crazyfliecontrol.controller;
 
 import android.content.Context;
+import android.util.Log;
 import android.widget.Toast;
 import se.bitcraze.crazyfliecontrol.ui.FlyingDataEvent;
 
@@ -26,7 +27,6 @@ public abstract class AbstractController implements IController {
 
 	public void enable(){
 		mIsDisabled = false;
-        Toast.makeText(mContext, "Using " + getControllerName(), Toast.LENGTH_SHORT).show();
 	}
 	
     public void disable() {
@@ -48,7 +48,7 @@ public abstract class AbstractController implements IController {
     public float getThrust() {
         float thrust = ((mControls.getMode() == 1 || mControls.getMode() == 3) ? mControls.getRightAnalog_Y() : mControls.getLeftAnalog_Y());
         if (thrust > mControls.getDeadzone()) {
-            return mControls.getMinThrust() + (thrust * mControls.getThrustFactor());
+            return (mControls.getMinThrust() + (thrust * mControls.getThrustFactor()))/100 * 65535;
         }
         return 0;
     }
