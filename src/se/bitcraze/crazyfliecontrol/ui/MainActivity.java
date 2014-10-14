@@ -53,11 +53,13 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
+import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.Toast;
 
 import com.MobileAnarchy.Android.Widgets.Joystick.DualJoystickView;
 
-public class MainActivity extends Activity implements FlyingDataEvent, ConnectionListener {
+public class MainActivity extends Activity implements FlyingDataEvent, ConnectionListener, OnCheckedChangeListener{
 
 	private DualJoystickView mDualJoystickView;
 	private FlightDataView mFlightDataView;
@@ -143,7 +145,12 @@ public class MainActivity extends Activity implements FlyingDataEvent, Connectio
 		crazyflieApp.removeConnectionListener(this);
 		crazyflieApp.disableController();
 	}
-
+	
+	@Override
+	public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+		//crazyflieApp.getRadioLink().param.setHoverModer(isChecked);
+	}
+	
 	@Override
 	public void onBackPressed() {
 		if (mDoubleBackToExitPressedOnce) {
@@ -282,5 +289,4 @@ public class MainActivity extends Activity implements FlyingDataEvent, Connectio
             }
         });
 	}
-
 }
