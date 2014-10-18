@@ -63,7 +63,7 @@ public class GyroscopeController extends TouchController {
 
     	@Override
     	public void onSensorChanged(SensorEvent event) {
-    		// TODO Auto-generated method stub
+    		// TODO Auto-generated method stub    	
     		mSensorPitch = (event.values[0] / 10 ) * -1;
     		mSensorRoll = event.values[1] / 10;       
             updateFlightData();

@@ -35,6 +35,7 @@ import se.bitcraze.crazyfliecontrol.controller.Controls;
 import se.bitcraze.crazyfliecontrol.controller.GamepadController;
 import se.bitcraze.crazyfliecontrol.controller.GyroscopeController;
 import se.bitcraze.crazyfliecontrol.controller.IController;
+import se.bitcraze.crazyfliecontrol.controller.PebbleController;
 import se.bitcraze.crazyfliecontrol.controller.TouchController;
 import se.bitcraze.crazyfliecontrol.prefs.PreferencesActivity;
 import se.bitcraze.crazyflielib.ConnectionListener;
@@ -236,11 +237,15 @@ public class MainActivity extends Activity implements FlyingDataEvent, Connectio
 
 	private void resetInputMethod() {
 		IController controller;
+		/*
 		if (controls.isUseGyro()) {
 			controller = new GyroscopeController(getApplicationContext(),mDualJoystickView, (SensorManager) getSystemService(Context.SENSOR_SERVICE));
 		} else {
 			controller = new TouchController(getApplicationContext(), mDualJoystickView);
 		}
+		*/
+		
+		controller = new PebbleController(getApplicationContext(), mDualJoystickView);
 		
 		controller.setOnFlyingDataListener(this);
 		crazyflieApp.setController(controller);
