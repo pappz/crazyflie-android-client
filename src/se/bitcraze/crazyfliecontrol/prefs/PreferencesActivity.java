@@ -63,6 +63,7 @@ public class PreferencesActivity extends PreferenceActivity implements OnSharedP
     public static final String KEY_PREF_MAX_THRUST = "pref_maxthrust";
     public static final String KEY_PREF_MIN_THRUST = "pref_minthrust";
     public static final String KEY_PREF_USE_GYRO_BOOL = "pref_use_gyro_bool";
+    public static final String KEY_PREF_USE_PEBBLE_BOOL = "pref_use_pebble_bool";
     public static final String KEY_PREF_XMODE = "pref_xmode";
     public static final String KEY_PREF_RESET_AFC = "pref_reset_afc";
     public static final String KEY_PREF_RIGHT_ANALOG_X_AXIS = "pref_right_analog_x_axis";
@@ -203,6 +204,8 @@ public class PreferencesActivity extends PreferenceActivity implements OnSharedP
                 return true;
             }
         });
+
+        setGyroAndPebbleSettings();
     }
 
     /**
@@ -271,7 +274,16 @@ public class PreferencesActivity extends PreferenceActivity implements OnSharedP
 
         if (key.equals(KEY_PREF_USE_GYRO_BOOL)) {
             CheckBoxPreference pref = (CheckBoxPreference) findPreference(key);
-            pref.setChecked(sharedPreferences.getBoolean(key, false));
+            boolean state = sharedPreferences.getBoolean(key, false);
+            pref.setChecked(state);
+            ((CheckBoxPreference) findPreference(KEY_PREF_USE_PEBBLE_BOOL)).setEnabled(!state);
+        }
+        
+        if (key.equals(KEY_PREF_USE_PEBBLE_BOOL)) {
+            CheckBoxPreference pref = (CheckBoxPreference) findPreference(key);
+            boolean state = sharedPreferences.getBoolean(key, false);
+            pref.setChecked(state);
+            ((CheckBoxPreference) findPreference(KEY_PREF_USE_GYRO_BOOL)).setEnabled(!state);
         }
 
         if (key.equals(KEY_PREF_SPLITAXIS_YAW_LEFT_AXIS)){
@@ -342,6 +354,27 @@ public class PreferencesActivity extends PreferenceActivity implements OnSharedP
         }
     }
 
+    private void setGyroAndPebbleSettings(){
+    	boolean gyro = sharedPreferences.getBoolean(KEY_PREF_USE_GYRO_BOOL, false);
+    	boolean pebble = sharedPreferences.getBoolean(KEY_PREF_USE_PEBBLE_BOOL, false);
+        CheckBoxPreference pebblepref = (CheckBoxPreference) findPreference(KEY_PREF_USE_PEBBLE_BOOL);
+        CheckBoxPreference gyropref = (CheckBoxPreference) findPreference(KEY_PREF_USE_GYRO_BOOL);
+        if(gyro) {
+            pebblepref.setChecked(false);
+            pebblepref.setEnabled(false);
+        } else {
+        	pebblepref.setEnabled(true);
+        }
+
+        if(pebble) {
+        	gyropref.setChecked(false);
+        	gyropref.setEnabled(false);
+        } else {
+        	gyropref.setEnabled(true);
+        }
+
+    }
+    
     private String setInitialSummaryAndReturnDefaultValue(String pKey, int pRDefaultValue) {
         Preference pref = findPreference(pKey);
         String defaultValue = getResources().getString(pRDefaultValue);

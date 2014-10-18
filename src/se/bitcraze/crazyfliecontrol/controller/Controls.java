@@ -54,6 +54,8 @@ public class Controls {
 
     private boolean mUseGyro;
     
+    private boolean mUsePebble;
+
     private int mRadioChannel;
     private int mDataRate;
 
@@ -103,6 +105,8 @@ public class Controls {
         this.mPitchTrim = Float.parseFloat(mPreferences.getString(PreferencesActivity.KEY_PREF_PITCHTRIM, mTrimDefaultValue));
 
         this.mUseGyro = mPreferences.getBoolean(PreferencesActivity.KEY_PREF_USE_GYRO_BOOL, false);
+
+        this.mUsePebble = mPreferences.getBoolean(PreferencesActivity.KEY_PREF_USE_PEBBLE_BOOL, false);
 
         if (mPreferences.getBoolean(PreferencesActivity.KEY_PREF_AFC_BOOL, false)) {
             this.mMaxRollPitchAngle = Integer.parseInt(mPreferences.getString(PreferencesActivity.KEY_PREF_MAX_ROLLPITCH_ANGLE,
@@ -218,6 +222,10 @@ public class Controls {
 
     public boolean isUseGyro() {
         return mUseGyro;
+    }
+
+    public boolean isUsePebble() {
+        return mUsePebble;
     }
 
     public float getRightAnalog_X() {

@@ -41,6 +41,9 @@
     <string name="preferences_use_gyro_bool_summary_on">Use gyroscope sensors for roll and pitch</string>
     <string name="preferences_use_gyro_bool_summary_off">Do not use gyroscope sensors for roll and pitch</string>
     <string name="preferences_use_gyro_bool_title">Use gyroscope sensors</string>
+    <string name="preferences_use_pebble_bool_summary_on">Use Pebble sensors for roll and pitch</string>
+    <string name="preferences_use_pebble_bool_summary_off">Do not use Pebble sensors for roll and pitch</string>
+    <string name="preferences_use_pebble_bool_title">Use Pebble smart watch</string>
     <string name="preferences_xmode_title">X-Mode</string>
     <string name="preferences_xmode_summary">Client X-mode</string>
     <string name="preferences_btn_title">Gamepad axis and button mapping</string>

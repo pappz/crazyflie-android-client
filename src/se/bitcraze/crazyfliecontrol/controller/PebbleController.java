@@ -51,7 +51,6 @@ public class PebbleController extends TouchController  {
             public void receiveData(final Context context, final int transactionId, final PebbleDictionary data) {
             	if(data.contains(0)) {            	
             		Long button = data.getUnsignedInteger(0);
-            		Log.d("Crazyflie.Pebble: ","Received data: "+Long.toString(button));
             	}
             	
             	Long x = (long) 0,y = (long) 0 ,z = (long) 0;
@@ -79,9 +78,9 @@ public class PebbleController extends TouchController  {
             	//Log.d("Crazyflie.Pebble: ","Received data: "+Long.toString(x)+" "+Long.toString(y));            	
                 PebbleKit.sendAckToPebble(context, transactionId);
                 //updateUi(); 
-                
-                sensorRoll = x / 1000;
-                sensorPitch = y / 1000;       
+
+                sensorRoll = x;
+                sensorPitch = y;
                 updateFlightData();
             }
         };
@@ -123,12 +122,25 @@ public class PebbleController extends TouchController  {
     }
 
     public float getRoll() {
-        float roll = sensorRoll;
+        float roll = sensorRoll / (float) 1000;
+
+        if(roll + mControls.getRollTrim() > 1 ) {
+        	roll = 1;
+        } else if(roll + mControls.getRollTrim() < 1) {
+        	roll = -1;
+        }
+        
         return (roll + mControls.getRollTrim()) * mControls.getRollPitchFactor() * mControls.getDeadzone(roll);
     }
 
     public float getPitch() {
-        float pitch = sensorPitch;
+        float pitch = sensorPitch / (float) 1000;
+
+        if(pitch + mControls.getPitchTrim() > 1 ) {
+        	pitch = 1;
+        } else if(pitch + mControls.getPitchTrim() < 1) {
+        	pitch = -1;
+        }
         return (pitch + mControls.getPitchTrim()) * mControls.getRollPitchFactor() * mControls.getDeadzone(pitch);
     }
 }
