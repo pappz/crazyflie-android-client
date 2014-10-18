@@ -15,7 +15,6 @@ public class PebbleController extends TouchController  {
    
     private float sensorRoll = 0;
     private float sensorPitch = 0;
-    double g = 0;
     
     private PebbleKit.PebbleDataReceiver dataHandler = null;    
     private final UUID pebbleUUID = UUID.fromString("30db0a7d-ebbd-4bf7-aaad-4bed53d54530");
@@ -29,7 +28,6 @@ public class PebbleController extends TouchController  {
         super.enable();
         mControls.setHoverMode(true);
 
-        g = 0;
         dataHandler = new PebbleKit.PebbleDataReceiver(pebbleUUID) {
             @Override
             public void receiveData(final Context context, final int transactionId, final PebbleDictionary data) {
@@ -49,22 +47,11 @@ public class PebbleController extends TouchController  {
             	if(data.contains(3)) {            	
             		z = data.getInteger(3);
             	}            	
-            	//Log.d("Crazyflie.Pebble: ","Received data+: "+Float.toString(converToSI(x)));
-            	//Log.d("Crazyflie.Pebble: ","Received data+: "+Double.toString(exludeGravity(x)));
-            	//", "+Double.toString(exludeGravity(y))+" "+Double.toString(exludeGravity(z)));
-            	/*
-            	
-            	long y = data.getInteger(1);
-            	long z = data.getInteger(2);
-            	sensorRoll = (float) x;
-            	sensorPitch = (float) y;
-            	*/
-            	//Log.d("Crazyflie.Pebble: ","Received data: "+Long.toString(x)+" "+Long.toString(y));            	
-                PebbleKit.sendAckToPebble(context, transactionId);
-                //updateUi(); 
+            	            	
+                PebbleKit.sendAckToPebble(context, transactionId); 
 
-                sensorRoll = x;
-                sensorPitch = y;
+                sensorRoll = (float) x;
+                sensorPitch = (float) y;
                 updateFlightData();
             }
         };

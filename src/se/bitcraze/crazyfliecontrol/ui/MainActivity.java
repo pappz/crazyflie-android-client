@@ -115,6 +115,7 @@ public class MainActivity extends Activity implements FlyingDataEvent, Connectio
 				crazyflieApp.linkDisconnect();
 			} else {
 				crazyflieApp.linkConnect();
+				//Have to call because it reset the hover mode.
 				resetInputMethod();
 			}
 			break;
