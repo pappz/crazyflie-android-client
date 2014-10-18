@@ -1,21 +1,12 @@
 package se.bitcraze.crazyfliecontrol.controller;
 
-import static com.getpebble.android.kit.Constants.APP_UUID;
-import static com.getpebble.android.kit.Constants.MSG_DATA;
-import static com.getpebble.android.kit.Constants.TRANSACTION_ID;
-
 import java.util.UUID;
 
-import org.json.JSONException;
-
 import android.content.Context;
-import android.content.Intent;
 import android.util.Log;
 
 import com.MobileAnarchy.Android.Widgets.Joystick.DualJoystickView;
-import com.MobileAnarchy.Android.Widgets.Joystick.JoystickMovedListener;
 import com.getpebble.android.kit.PebbleKit;
-import com.getpebble.android.kit.Constants;
 import com.getpebble.android.kit.util.PebbleDictionary;
 
 
