@@ -9,15 +9,6 @@ import com.MobileAnarchy.Android.Widgets.Joystick.DualJoystickView;
 import com.getpebble.android.kit.PebbleKit;
 import com.getpebble.android.kit.util.PebbleDictionary;
 
-
-/**
- * The TouchController uses the on-screen joysticks to control the roll, pitch, yaw and thrust values.
- * The mapping of the axes can be changed with the "mode" setting in the preferences.
- * 
- * For example, mode 3 (default) maps roll to the left X-Axis, pitch to the left Y-Axis,
- * yaw to the right X-Axis and thrust to the right Y-Axis.
- * 
- */
 public class PebbleController extends TouchController  {
 
     protected int mResolution = 1000;
