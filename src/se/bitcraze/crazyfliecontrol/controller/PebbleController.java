@@ -1,5 +1,7 @@
 package se.bitcraze.crazyfliecontrol.controller;
 
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.UUID;
 
 import android.content.Context;
@@ -15,12 +17,17 @@ public class PebbleController extends TouchController  {
    
     private float sensorRoll = 0;
     private float sensorPitch = 0;
+    private float thrust = 0;
+    
+    Timer timer;
     
     private PebbleKit.PebbleDataReceiver dataHandler = null;    
     private final UUID pebbleUUID = UUID.fromString("30db0a7d-ebbd-4bf7-aaad-4bed53d54530");
     
     public PebbleController(Context context, DualJoystickView dualJoystickView) {
     	super(context, dualJoystickView);
+    	
+    	timer = new Timer();
     }
 
     @Override
@@ -31,8 +38,29 @@ public class PebbleController extends TouchController  {
         dataHandler = new PebbleKit.PebbleDataReceiver(pebbleUUID) {
             @Override
             public void receiveData(final Context context, final int transactionId, final PebbleDictionary data) {
+            	
             	if(data.contains(0)) {            	
             		Long button = data.getUnsignedInteger(0);
+            		
+            		if ( thrust == 0 && button != -1 ) {
+            			//Down button
+            			if (button == 0) {
+            				thrust = -1;
+            			//select button
+            			} else if( button == 1) {
+            				thrust = 1;            				
+            			//up button
+            			} else if( button == 2) {
+            				thrust = 0;
+            			}
+            			
+                		timer.schedule(new TimerTask() {
+              			  @Override
+              			  public void run() {
+              				  thrust = 0;
+              			  }
+              			}, 1000*4);
+            		}
             	}
             	
             	Long x = (long) 0,y = (long) 0 ,z = (long) 0;
@@ -73,6 +101,20 @@ public class PebbleController extends TouchController  {
         return "Pebble controller";
     }
 
+    @Override
+    public float getThrust() {
+
+        if(thrust == 1) {
+        	return 65535;
+        } else if( thrust == -1) {
+        	return 0;
+        } else {
+        	return 32767;
+        }
+
+    }
+    
+    @Override
     public float getRoll() {
         float roll = sensorRoll / (float) 1000;
 
@@ -84,7 +126,8 @@ public class PebbleController extends TouchController  {
         
         return (roll + mControls.getRollTrim()) * mControls.getRollPitchFactor() * mControls.getDeadzone(roll);
     }
-
+    
+    @Override
     public float getPitch() {
         float pitch = sensorPitch / (float) 1000;
 
