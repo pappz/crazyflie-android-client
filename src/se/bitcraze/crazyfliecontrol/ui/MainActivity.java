@@ -115,7 +115,7 @@ public class MainActivity extends Activity implements FlyingDataEvent, Connectio
 				crazyflieApp.linkDisconnect();
 			} else {
 				crazyflieApp.linkConnect();
-				switchHoverMode(false);
+				resetInputMethod();
 			}
 			break;
 		case R.id.preferences:
@@ -134,9 +134,7 @@ public class MainActivity extends Activity implements FlyingDataEvent, Connectio
 		gamepadController.setControlConfig();
 		resetInputMethod();
 		checkScreenLock();
-		
-		//Reset the hover mode		
-		switchHoverMode(false);
+
 	}
 
 	@Override
@@ -240,10 +238,16 @@ public class MainActivity extends Activity implements FlyingDataEvent, Connectio
 
 		if (controls.isUseGyro()) {
 			controller = new GyroscopeController(getApplicationContext(),mDualJoystickView, (SensorManager) getSystemService(Context.SENSOR_SERVICE));
+			switchHoverMode(false);
+			((ToggleButton) findViewById(R.id.hovermode)).setEnabled(true);
 		} else if(controls.isUsePebble()) {
 			controller = new PebbleController(getApplicationContext(), mDualJoystickView);
+			((ToggleButton) findViewById(R.id.hovermode)).setEnabled(false);
+			switchHoverMode(true);
 		} else {
 			controller = new TouchController(getApplicationContext(), mDualJoystickView);
+			switchHoverMode(false);
+			((ToggleButton) findViewById(R.id.hovermode)).setEnabled(true);
 		}
 		
 		controller.setOnFlyingDataListener(this);

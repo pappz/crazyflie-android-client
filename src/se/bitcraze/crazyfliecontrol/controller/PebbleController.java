@@ -27,6 +27,8 @@ public class PebbleController extends TouchController  {
     @Override
     public void enable() {
         super.enable();
+        mControls.setHoverMode(true);
+
         g = 0;
         dataHandler = new PebbleKit.PebbleDataReceiver(pebbleUUID) {
             @Override
