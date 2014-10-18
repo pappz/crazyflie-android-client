@@ -27,7 +27,7 @@ import com.getpebble.android.kit.util.PebbleDictionary;
  * yaw to the right X-Axis and thrust to the right Y-Axis.
  * 
  */
-public class PebbleController extends AbstractController {
+public class PebbleController extends TouchController  {
 
     protected int mResolution = 1000;
    
@@ -38,8 +38,8 @@ public class PebbleController extends AbstractController {
     private PebbleKit.PebbleDataReceiver dataHandler = null;    
     private final UUID pebbleUUID = UUID.fromString("30db0a7d-ebbd-4bf7-aaad-4bed53d54530");
     
-    public PebbleController(Context context, DualJoystickView dualJoystickview) {
-        super(context);
+    public PebbleController(Context context, DualJoystickView dualJoystickView) {
+    	super(context, dualJoystickView);
     }
 
     @Override
@@ -66,10 +66,11 @@ public class PebbleController extends AbstractController {
             	if(data.contains(3)) {            	
             		z = data.getInteger(3);
             	}            	
-            	
-            	Log.d("Crazyflie.Pebble: ","Received data+: "+Double.toString(exludeGravity(x)));
+            	//Log.d("Crazyflie.Pebble: ","Received data+: "+Float.toString(converToSI(x)));
+            	//Log.d("Crazyflie.Pebble: ","Received data+: "+Double.toString(exludeGravity(x)));
             	//", "+Double.toString(exludeGravity(y))+" "+Double.toString(exludeGravity(z)));
             	/*
+            	
             	long y = data.getInteger(1);
             	long z = data.getInteger(2);
             	sensorRoll = (float) x;
@@ -78,10 +79,18 @@ public class PebbleController extends AbstractController {
             	//Log.d("Crazyflie.Pebble: ","Received data: "+Long.toString(x)+" "+Long.toString(y));            	
                 PebbleKit.sendAckToPebble(context, transactionId);
                 //updateUi(); 
+                
+                sensorRoll = x / 1000;
+                sensorPitch = y / 1000;       
+                updateFlightData();
             }
         };
         Log.d("Crazyflie.Pebble: ","Ready for receiving");
         PebbleKit.registerReceivedDataHandler(mContext, dataHandler);
+    }
+    
+    private float converToSI(float value) {
+    	return (float) (value/1000*9.80665);    
     }
     
     public double exludeGravity(float d) {
