@@ -87,25 +87,6 @@ public class PebbleController extends TouchController  {
         Log.d("Crazyflie.Pebble: ","Ready for receiving");
         PebbleKit.registerReceivedDataHandler(mContext, dataHandler);
     }
-    
-    private float converToSI(float value) {
-    	return (float) (value/1000*9.80665);    
-    }
-    
-    public double exludeGravity(float d) {
-    	//convert G to m/s^2
-    	double v = d/1000*9.80665;
-    	
-         // alpha is calculated as t / (t + dT)
-         // with t, the low-pass filter's time-constant
-         // and dT, the event delivery rate    	
-
-         final float alpha = (float) 0.8;
-
-         g = alpha * g + (1 - alpha) * v;
-
-         return v - g;
-    }
 
     @Override
     public void disable() {
