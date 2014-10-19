@@ -7,6 +7,7 @@ import java.util.UUID;
 import se.bitcraze.crazyfliecontrol.CrazyflieApp;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.MobileAnarchy.Android.Widgets.Joystick.DualJoystickView;
 import com.getpebble.android.kit.PebbleKit;
@@ -21,7 +22,7 @@ public class PebbleController extends AbstractController{
     private float Yaw = 0;
     private float thrust = 0;
     
-    private final static int yawFactor = 10;
+    private final static int yawFactor = 40;
     
     //Possible receiver keys
     private final static int DATA_BUTTON = 0;
@@ -133,6 +134,7 @@ public class PebbleController extends AbstractController{
             	}
             	
             	if(data.contains(DATA_X) && data.contains(DATA_Y) && data.contains(DATA_Z) ) {
+
             		sensorRoll = data.getInteger(DATA_X);
             		sensorPitch = data.getInteger(DATA_Y);
             	} else {
