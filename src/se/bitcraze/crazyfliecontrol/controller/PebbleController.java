@@ -7,7 +7,6 @@ import java.util.UUID;
 import se.bitcraze.crazyfliecontrol.CrazyflieApp;
 
 import android.content.Context;
-import android.util.Log;
 
 import com.MobileAnarchy.Android.Widgets.Joystick.DualJoystickView;
 import com.getpebble.android.kit.PebbleKit;
@@ -20,7 +19,22 @@ public class PebbleController extends AbstractController{
     private long sensorRoll = 0;
     private long sensorPitch = 0;
     private float thrust = 0;
-        
+    
+    
+    //Possible receiver keys
+    private final static int DATA_BUTTON = 0;
+    private final static int DATA_X = 1;
+    private final static int DATA_Y = 2;
+    private final static int DATA_Z = 3;
+
+    //Buttons
+    private final static int BUTTON_DOWN = 0;
+    private final static int BUTTON_SELECT = 1;
+    private final static int BUTTON_UP = 2;
+    private final static int BUTTON_LONG_DOWN = 3;
+    private final static int BUTTON_LONG_SELECT = 4;
+    private final static int BUTTON_LONG_UP = 5;
+    
     Timer timer;
     
     private PebbleKit.PebbleDataReceiver dataHandler = null;    
@@ -32,6 +46,35 @@ public class PebbleController extends AbstractController{
     	timer = new Timer();
     }
 
+    private void pushButton(int button) {
+    	switch (button) {
+    		case BUTTON_DOWN:
+    			thrust = -1;
+    			resetThurst();
+    			break;
+    		case BUTTON_SELECT:
+    			//Felszallas
+				CrazyflieApp crazyflieApp = (CrazyflieApp) mContext.getApplicationContext();
+				crazyflieApp.getRadioLink().getParam().setHoverMode(true);
+				mControls.setHoverMode(true);
+				thrust = 1;
+				resetThurst();
+    			break;
+    		case BUTTON_UP:
+    			thrust = 1;
+    			resetThurst();
+    			break;
+    	}
+    }
+    
+    private void resetThurst() {
+		timer.schedule(new TimerTask() {
+			  @Override
+			  public void run() {
+				  thrust = 0;
+			  }
+		}, 1000*2);
+    }
     @Override
     public void enable() {
         super.enable();
@@ -40,55 +83,25 @@ public class PebbleController extends AbstractController{
             @Override
             public void receiveData(final Context context, final int transactionId, final PebbleDictionary data) {
             	
-            	if(data.contains(0)) {            	
-            		Long button = data.getUnsignedInteger(0);
-            		
+            	if(data.contains(DATA_BUTTON)) {
+            		int button = data.getUnsignedInteger(DATA_BUTTON).intValue();
             		if ( thrust == 0 && button != -1 ) {
-            			//Down button
-            			if (button == 0) {
-            				thrust = -1;
-            			//select button
-            			} else if( button == 1) {
-            				CrazyflieApp crazyflieApp = (CrazyflieApp) mContext.getApplicationContext();
-            				crazyflieApp.getRadioLink().getParam().setHoverMode(true);
-            				mControls.setHoverMode(true);
-            				thrust = 1;
-            			//up button
-            			} else if( button == 2) {
-            				thrust = 1;
-            			}
-            			
-                		timer.schedule(new TimerTask() {
-              			  @Override
-              			  public void run() {
-              				  thrust = 0;
-              				  //updateFlightData();
-              			  }
-              			}, 1000*2);
+            			pushButton(button);
             		}
             	}
             	
-            	Long x = (long) 0,y = (long) 0 ,z = (long) 0;
-            	
-            	if(data.contains(1)) {            	
-            		x = data.getInteger(1);          		
+            	if(data.contains(DATA_X) && data.contains(DATA_Y) && data.contains(DATA_Z) ) {
+            		sensorRoll = data.getInteger(DATA_X);
+            		sensorPitch = data.getInteger(DATA_Y);
+            	} else {
+            		sensorRoll = 0;
+            		sensorPitch = 0;
             	}
-            	if(data.contains(2)) {            	
-            		y = data.getInteger(2);            		
-            	}
-            	
-            	if(data.contains(3)) {            	
-            		z = data.getInteger(3);
-            	}            	
             	            	
-                PebbleKit.sendAckToPebble(context, transactionId); 
-
-                sensorRoll = x;
-                sensorPitch = y;
+                PebbleKit.sendAckToPebble(context, transactionId);
                 updateFlightData();
             }
         };
-        Log.d("Crazyflie.Pebble: ","Ready for receiving");
         PebbleKit.registerReceivedDataHandler(mContext, dataHandler);
     }
     
