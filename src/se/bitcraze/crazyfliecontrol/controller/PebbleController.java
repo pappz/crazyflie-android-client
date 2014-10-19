@@ -134,9 +134,9 @@ public class PebbleController extends AbstractController{
             	}
             	
             	if(data.contains(DATA_X) && data.contains(DATA_Y) && data.contains(DATA_Z) ) {
-
-            		sensorRoll = data.getInteger(DATA_X);
-            		sensorPitch = data.getInteger(DATA_Y);
+            		double r = Math.sqrt(data.getInteger(DATA_X)^2+data.getInteger(DATA_Y)^2+data.getInteger(DATA_Z)^2);
+            		sensorRoll = (long) (data.getInteger(DATA_X)/r);
+            		sensorPitch = (long) (data.getInteger(DATA_Y)/r);
             	} else {
             		sensorRoll = 0;
             		sensorPitch = 0;
