@@ -54,30 +54,47 @@ public class PebbleController extends AbstractController{
     			thrust = -1;
     			resetThurst();
     			break;
+    		//lift-off
     		case BUTTON_SELECT:
-    			//Felszallas
 				CrazyflieApp crazyflieApp = (CrazyflieApp) mContext.getApplicationContext();
 				crazyflieApp.getRadioLink().getParam().setHoverMode(true);
 				mControls.setHoverMode(true);
 				thrust = 1;
 				resetThurst();
     			break;
+    		//rise
     		case BUTTON_UP:
     			thrust = 1;
     			resetThurst();
     			break;
+    		//Yaw right
     		case BUTTON_LONG_DOWN:
     			Yaw = yawFactor;
     			resetYaw();
     			break;
+    		//Landing
     		case BUTTON_LONG_SELECT:
-    			thrust = 1;
+    			landing();
     			break;
+    		//Yaw left
     		case BUTTON_LONG_UP:
     			Yaw = yawFactor*-1;
     			resetYaw();
     			break;
     	}
+    }
+    
+    private void landing() {
+    	thrust = -1;
+		timer.schedule(new TimerTask() {
+			  @Override
+			  public void run() {
+				  CrazyflieApp crazyflieApp = (CrazyflieApp) mContext.getApplicationContext();
+				  crazyflieApp.getRadioLink().getParam().setHoverMode(false);
+				  mControls.setHoverMode(false);
+				  thrust = 0;
+			  }
+		}, 1000*10);
     }
     
     private void resetThurst() {
