@@ -58,7 +58,6 @@ public class PebbleController extends AbstractController{
     			break;
     		//lift-off
     		case BUTTON_SELECT:
-				CrazyflieApp crazyflieApp = (CrazyflieApp) mContext.getApplicationContext();
 				CrazyradioLink.getCrazyradioLink().getParam().setHoverMode(true);
 				mControls.setHoverMode(true);
 				thrust = 1;
@@ -91,7 +90,6 @@ public class PebbleController extends AbstractController{
 		timer.schedule(new TimerTask() {
 			  @Override
 			  public void run() {
-				  CrazyflieApp crazyflieApp = (CrazyflieApp) mContext.getApplicationContext();
 				  CrazyradioLink.getCrazyradioLink().getParam().setHoverMode(false);
 				  mControls.setHoverMode(false);
 				  thrust = 0;
