@@ -39,6 +39,7 @@ public class USBReceiver  extends BroadcastReceiver{
                 UsbDevice device = (UsbDevice) intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
                 if (intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED, false)) {
                     if (device != null) {
+                    	crazyflieApp.linkConnect();
                         Toast.makeText(context, "Crazyradio attached", Toast.LENGTH_SHORT).show();
                     }
                 } else {
