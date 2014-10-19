@@ -4,6 +4,8 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
 
+import se.bitcraze.crazyfliecontrol.CrazyflieApp;
+
 import android.content.Context;
 import android.util.Log;
 
@@ -18,7 +20,7 @@ public class PebbleController extends AbstractController{
     private long sensorRoll = 0;
     private long sensorPitch = 0;
     private float thrust = 0;
-    
+        
     Timer timer;
     
     private PebbleKit.PebbleDataReceiver dataHandler = null;    
@@ -33,8 +35,7 @@ public class PebbleController extends AbstractController{
     @Override
     public void enable() {
         super.enable();
-        mControls.setHoverMode(true);
-
+        
         dataHandler = new PebbleKit.PebbleDataReceiver(pebbleUUID) {
             @Override
             public void receiveData(final Context context, final int transactionId, final PebbleDictionary data) {
@@ -48,18 +49,22 @@ public class PebbleController extends AbstractController{
             				thrust = -1;
             			//select button
             			} else if( button == 1) {
-            				thrust = 1;            				
+            				CrazyflieApp crazyflieApp = (CrazyflieApp) mContext.getApplicationContext();
+            				crazyflieApp.getRadioLink().getParam().setHoverMode(true);
+            				mControls.setHoverMode(true);
+            				thrust = 1;
             			//up button
             			} else if( button == 2) {
-            				thrust = 0;
+            				thrust = 1;
             			}
             			
                 		timer.schedule(new TimerTask() {
               			  @Override
               			  public void run() {
               				  thrust = 0;
+              				  //updateFlightData();
               			  }
-              			}, 1000*4);
+              			}, 1000*2);
             		}
             	}
             	
@@ -86,10 +91,11 @@ public class PebbleController extends AbstractController{
         Log.d("Crazyflie.Pebble: ","Ready for receiving");
         PebbleKit.registerReceivedDataHandler(mContext, dataHandler);
     }
-
+    
     @Override
     public void disable() {
         super.disable();
+        mControls.setHoverMode(false);
         try{
         	mContext.unregisterReceiver(dataHandler);
         }catch(Exception e){
@@ -103,7 +109,10 @@ public class PebbleController extends AbstractController{
 
     @Override
     public float getThrust() {
-
+    	if(!mControls.getHoverMode()) {
+    		return 0;
+    	}
+    	
         if(thrust == 1) {
         	return 65535;
         } else if( thrust == -1) {
@@ -117,7 +126,6 @@ public class PebbleController extends AbstractController{
     @Override
     public float getRoll() {
         float roll = (float) sensorRoll / (float) 1000;
-        Log.d("Crazyflie.pebble","Roll: "+Float.toString(roll)+" "+Float.toString(sensorRoll));
 
         if(roll + mControls.getRollTrim() > 1 ) {
         	roll = 1;

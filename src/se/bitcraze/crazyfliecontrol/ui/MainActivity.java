@@ -137,7 +137,8 @@ public class MainActivity extends Activity implements FlyingDataEvent, Connectio
 		gamepadController.setControlConfig();
 		resetInputMethod();
 		checkScreenLock();
-
+		
+		switchHoverMode(false);
 	}
 
 	@Override
@@ -165,7 +166,6 @@ public class MainActivity extends Activity implements FlyingDataEvent, Connectio
 		crazyflieApp.getRadioLink().getParam().setHoverMode(hover);
 		//store the state
 		controls.setHoverMode(hover);
-		((ToggleButton) findViewById(R.id.hovermode)).setChecked(hover);
 	}
 	
 	@Override
@@ -238,20 +238,25 @@ public class MainActivity extends Activity implements FlyingDataEvent, Connectio
 
 	private void resetInputMethod() {
 		IController controller;
-
+				
 		if (controls.isUseGyro()) {
 			controller = new GyroscopeController(getApplicationContext(),mDualJoystickView, (SensorManager) getSystemService(Context.SENSOR_SERVICE));
-			switchHoverMode(false);
-			((ToggleButton) findViewById(R.id.hovermode)).setEnabled(true);
 		} else if(controls.isUsePebble()) {
 			controller = new PebbleController(getApplicationContext(), mDualJoystickView);
-			((ToggleButton) findViewById(R.id.hovermode)).setEnabled(false);
-			switchHoverMode(true);
 		} else {
 			controller = new TouchController(getApplicationContext(), mDualJoystickView);
-			switchHoverMode(false);
-			((ToggleButton) findViewById(R.id.hovermode)).setEnabled(true);
 		}
+		
+		runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				if(controls.isUsePebble()) {
+					((ToggleButton) findViewById(R.id.hovermode)).setEnabled(false);
+				} else {
+					((ToggleButton) findViewById(R.id.hovermode)).setEnabled(true);
+				}
+			}
+		});
 		
 		controller.setOnFlyingDataListener(this);
 		crazyflieApp.setController(controller);

@@ -69,7 +69,7 @@ public class CrazyflieApp extends Application {
         	new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    while (crazyradioLink.isConnected()) {                       
+                    while (crazyradioLink.isConnected()) {
                     	crazyradioLink.send(new CommanderPacket(mController.getRoll(), mController.getPitch(), mController.getYaw(), (char) mController.getThrust(), controls.isXmode()));
                         try {
                             Thread.sleep(20, 0);
