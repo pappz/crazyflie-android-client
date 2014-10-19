@@ -18,8 +18,10 @@ public class PebbleController extends AbstractController{
    
     private long sensorRoll = 0;
     private long sensorPitch = 0;
+    private float Yaw = 0;
     private float thrust = 0;
     
+    private final static int yawFactor = 10;
     
     //Possible receiver keys
     private final static int DATA_BUTTON = 0;
@@ -64,6 +66,17 @@ public class PebbleController extends AbstractController{
     			thrust = 1;
     			resetThurst();
     			break;
+    		case BUTTON_LONG_DOWN:
+    			Yaw = yawFactor;
+    			resetYaw();
+    			break;
+    		case BUTTON_LONG_SELECT:
+    			thrust = 1;
+    			break;
+    		case BUTTON_LONG_UP:
+    			Yaw = yawFactor*-1;
+    			resetYaw();
+    			break;
     	}
     }
     
@@ -75,6 +88,16 @@ public class PebbleController extends AbstractController{
 			  }
 		}, 1000*2);
     }
+    
+    private void resetYaw() {
+		timer.schedule(new TimerTask() {
+			  @Override
+			  public void run() {
+				  Yaw = 0;
+			  }
+		}, 1000*1);
+    }
+    
     @Override
     public void enable() {
         super.enable();
@@ -85,7 +108,9 @@ public class PebbleController extends AbstractController{
             	
             	if(data.contains(DATA_BUTTON)) {
             		int button = data.getUnsignedInteger(DATA_BUTTON).intValue();
-            		if ( thrust == 0 && button != -1 ) {
+            		if ( thrust == 0 && button >= BUTTON_DOWN && button <= BUTTON_UP) {
+            			pushButton(button);
+            		} else if (button != -1){
             			pushButton(button);
             		}
             	}
@@ -135,7 +160,7 @@ public class PebbleController extends AbstractController{
         }
 
     }
-    
+
     @Override
     public float getRoll() {
         float roll = (float) sensorRoll / (float) 1000;
@@ -147,7 +172,7 @@ public class PebbleController extends AbstractController{
         }
         return (roll + mControls.getRollTrim()) * mControls.getRollPitchFactor() * mControls.getDeadzone(roll);
     }
-    
+
     @Override
     public float getPitch() {
         float pitch = (float) sensorPitch / (float) 1000;
@@ -158,5 +183,10 @@ public class PebbleController extends AbstractController{
         	pitch = -1;
         }
         return (pitch + mControls.getPitchTrim()) * mControls.getRollPitchFactor() * mControls.getDeadzone(pitch);
+    }
+
+    @Override
+    public float getYaw() {
+        return Yaw;
     }
 }
