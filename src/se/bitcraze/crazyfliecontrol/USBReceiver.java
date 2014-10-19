@@ -27,7 +27,6 @@ public class USBReceiver  extends BroadcastReceiver{
 		final String TAG = "Crazyflie.USBReceiver";
 	
 		this.context = context;
-		//TODO: megy ez?		
 		crazyflieApp = (CrazyflieApp) context.getApplicationContext();
 		initializeSounds();
 		
