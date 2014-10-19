@@ -170,7 +170,7 @@ public class MainActivity extends Activity implements FlyingDataEvent, Connectio
 	
 	private void switchHoverMode(boolean hover){
 		//Send the info
-		crazyflieApp.getRadioLink().getParam().setHoverMode(hover);
+		CrazyradioLink.getCrazyradioLink().getParam().setHoverMode(hover);
 		//store the state
 		controls.setHoverMode(hover);
 		((ToggleButton) findViewById(R.id.hovermode)).setChecked(hover);
