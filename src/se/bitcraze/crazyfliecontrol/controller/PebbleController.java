@@ -5,6 +5,7 @@ import java.util.TimerTask;
 import java.util.UUID;
 
 import se.bitcraze.crazyfliecontrol.CrazyflieApp;
+import se.bitcraze.crazyflielib.CrazyradioLink;
 
 import android.content.Context;
 import android.util.Log;
@@ -58,7 +59,7 @@ public class PebbleController extends AbstractController{
     		//lift-off
     		case BUTTON_SELECT:
 				CrazyflieApp crazyflieApp = (CrazyflieApp) mContext.getApplicationContext();
-				crazyflieApp.getRadioLink().getParam().setHoverMode(true);
+				CrazyradioLink.getCrazyradioLink().getParam().setHoverMode(true);
 				mControls.setHoverMode(true);
 				thrust = 1;
 				resetThurst();
@@ -91,7 +92,7 @@ public class PebbleController extends AbstractController{
 			  @Override
 			  public void run() {
 				  CrazyflieApp crazyflieApp = (CrazyflieApp) mContext.getApplicationContext();
-				  crazyflieApp.getRadioLink().getParam().setHoverMode(false);
+				  CrazyradioLink.getCrazyradioLink().getParam().setHoverMode(false);
 				  mControls.setHoverMode(false);
 				  thrust = 0;
 			  }
