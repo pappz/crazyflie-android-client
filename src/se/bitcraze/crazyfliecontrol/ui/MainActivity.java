@@ -107,6 +107,16 @@ public class MainActivity extends Activity implements FlyingDataEvent, Connectio
 	}
 
 	@Override
+	public boolean onPrepareOptionsMenu(final Menu menu) {
+		if (CrazyradioLink.getCrazyradioLink().isConnected()) {
+			menu.findItem(R.id.menu_connect).setTitle(R.string.menu_disconnect);
+		} else {
+			menu.findItem(R.id.menu_connect).setTitle(R.string.menu_connect);
+		}
+		return super.onPrepareOptionsMenu(menu);
+	}
+
+	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case R.id.menu_connect:
