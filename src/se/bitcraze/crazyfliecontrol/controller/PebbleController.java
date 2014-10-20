@@ -21,6 +21,8 @@ public class PebbleController extends AbstractController{
     private float Yaw = 0;
     private float thrust = 0;
     
+    private final float AMPLIFICATION = 1.3f;
+    
     private final static int yawFactor = 40;
     
     //Possible receiver keys
@@ -132,8 +134,8 @@ public class PebbleController extends AbstractController{
             	
             	if(data.contains(DATA_X) && data.contains(DATA_Y) && data.contains(DATA_Z) ) {
             		double d = Math.sqrt(data.getInteger(DATA_X)*data.getInteger(DATA_X)+data.getInteger(DATA_Y)*data.getInteger(DATA_Y)+data.getInteger(DATA_Z)*data.getInteger(DATA_Z));
-            		sensorRoll = (float) ((float) data.getInteger(DATA_X) / (float) d);
-            		sensorPitch = (float) (data.getInteger(DATA_Y) / (float) d);
+            		sensorRoll = (float) ((float) data.getInteger(DATA_X) / (float) d) * AMPLIFICATION;
+            		sensorPitch = (float) (data.getInteger(DATA_Y) / (float) d) * AMPLIFICATION;
             	} else {
             		sensorRoll = 0;
             		sensorPitch = 0;
