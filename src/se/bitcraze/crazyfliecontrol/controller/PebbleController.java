@@ -15,11 +15,9 @@ import com.getpebble.android.kit.PebbleKit;
 import com.getpebble.android.kit.util.PebbleDictionary;
 
 public class PebbleController extends AbstractController{
-
-    protected int mResolution = 1000;
    
-    private long sensorRoll = 0;
-    private long sensorPitch = 0;
+    private float sensorRoll = 0;
+    private float sensorPitch = 0;
     private float Yaw = 0;
     private float thrust = 0;
     
@@ -133,9 +131,9 @@ public class PebbleController extends AbstractController{
             	}
             	
             	if(data.contains(DATA_X) && data.contains(DATA_Y) && data.contains(DATA_Z) ) {
-            		double r = Math.sqrt(data.getInteger(DATA_X)^2+data.getInteger(DATA_Y)^2+data.getInteger(DATA_Z)^2);
-            		sensorRoll = (long) (data.getInteger(DATA_X)/r);
-            		sensorPitch = (long) (data.getInteger(DATA_Y)/r);
+            		double d = Math.sqrt(data.getInteger(DATA_X)*data.getInteger(DATA_X)+data.getInteger(DATA_Y)*data.getInteger(DATA_Y)+data.getInteger(DATA_Z)*data.getInteger(DATA_Z));
+            		sensorRoll = (float) ((float) data.getInteger(DATA_X) / (float) d);
+            		sensorPitch = (float) (data.getInteger(DATA_Y) / (float) d);
             	} else {
             		sensorRoll = 0;
             		sensorPitch = 0;
@@ -181,25 +179,19 @@ public class PebbleController extends AbstractController{
 
     @Override
     public float getRoll() {
-        float roll = (float) sensorRoll / (float) 1000;
+        float roll = sensorRoll;
+        
+        roll = (float) Math.min(1.0, Math.max(-1, roll+mControls.getRollTrim()));
 
-        if(roll + mControls.getRollTrim() > 1 ) {
-        	roll = 1;
-        } else if(roll + mControls.getRollTrim() < -1) {
-        	roll = -1;
-        }
         return (roll + mControls.getRollTrim()) * mControls.getRollPitchFactor() * mControls.getDeadzone(roll);
     }
 
     @Override
     public float getPitch() {
-        float pitch = (float) sensorPitch / (float) 1000;
+        float pitch = sensorPitch;
 
-        if(pitch + mControls.getPitchTrim() > 1 ) {
-        	pitch = 1;
-        } else if(pitch + mControls.getPitchTrim() < -1) {
-        	pitch = -1;
-        }
+        pitch = (float) Math.min(1.0, Math.max(-1, pitch+mControls.getPitchTrim()));
+
         return (pitch + mControls.getPitchTrim()) * mControls.getRollPitchFactor() * mControls.getDeadzone(pitch);
     }
 
