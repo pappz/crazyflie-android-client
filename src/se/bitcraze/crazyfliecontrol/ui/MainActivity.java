@@ -250,7 +250,7 @@ public class MainActivity extends Activity implements FlyingDataEvent, Connectio
 		IController controller;
 				
 		if (controls.isUseGyro()) {
-			controller = new GyroscopeController(getApplicationContext(),mDualJoystickView, (SensorManager) getSystemService(Context.SENSOR_SERVICE));
+			controller = new GyroscopeController(getApplicationContext(), mDualJoystickView, (SensorManager) getSystemService(Context.SENSOR_SERVICE));
 		} else if(controls.isUsePebble()) {
 			controller = new PebbleController(getApplicationContext(), mDualJoystickView);
 		} else {

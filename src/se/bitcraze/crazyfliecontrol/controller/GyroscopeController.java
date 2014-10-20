@@ -1,6 +1,6 @@
 package se.bitcraze.crazyfliecontrol.controller;
 
-import se.bitcraze.crazyfliecontrol.MainActivity;
+import android.content.Context;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -25,8 +25,8 @@ public class GyroscopeController extends TouchController implements SensorEventL
     //It divide back the 90 degree.
     private final float AMPLIFICATION = 1.5f;
 
-    public GyroscopeController(Controls controls, MainActivity activity, DualJoystickView dualJoystickView, SensorManager sensorManager) {
-        super(controls, activity, dualJoystickView);
+    public GyroscopeController(Context context, DualJoystickView dualJoystickView, SensorManager sensorManager) {
+        super(context, dualJoystickView);
         mSensorManager = sensorManager;
     }
 
