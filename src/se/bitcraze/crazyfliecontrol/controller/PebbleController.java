@@ -52,9 +52,10 @@ public class PebbleController extends AbstractController{
 
     private void pushButton(int button) {
     	switch (button) {
+    		//Yaw right
     		case BUTTON_DOWN:
-    			thrust = -1;
-    			resetThurst();
+    			Yaw = yawFactor;
+    			resetYaw();
     			break;
     		//lift-off
     		case BUTTON_SELECT:
@@ -63,24 +64,23 @@ public class PebbleController extends AbstractController{
 				thrust = 1;
 				resetThurst();
     			break;
-    		//rise
+    		//yaw left
     		case BUTTON_UP:
-    			thrust = 1;
-    			resetThurst();
-    			break;
-    		//Yaw right
-    		case BUTTON_LONG_DOWN:
-    			Yaw = yawFactor;
+    			Yaw = yawFactor*-1;
     			resetYaw();
+    			break;
+    		case BUTTON_LONG_DOWN:
+    			thrust = -1;
+    			resetThurst();
     			break;
     		//Landing
     		case BUTTON_LONG_SELECT:
     			landing();
     			break;
-    		//Yaw left
-    		case BUTTON_LONG_UP:
-    			Yaw = yawFactor*-1;
-    			resetYaw();
+    		//rise
+    		case BUTTON_LONG_UP:    			
+    			thrust = 1;
+    			resetThurst();
     			break;
     	}
     }
