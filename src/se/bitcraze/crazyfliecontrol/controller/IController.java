@@ -4,7 +4,7 @@ import se.bitcraze.crazyfliecontrol.ui.FlyingDataEvent;
 
 public interface IController {
 	
-	public void setOnFlyingDataListener(FlyingDataEvent flyingDataListener);
+    public void setOnFlyingDataListener(FlyingDataEvent flyingDataListener);
 	
     public float getThrust();
 
@@ -17,5 +17,4 @@ public interface IController {
     public void enable();
     
     public void disable();
-
 }
