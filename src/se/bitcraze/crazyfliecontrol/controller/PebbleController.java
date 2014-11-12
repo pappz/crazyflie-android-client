@@ -42,7 +42,7 @@ public class PebbleController extends AbstractController{
     Timer timer;
     
     private PebbleKit.PebbleDataReceiver dataHandler = null;    
-    private final UUID pebbleUUID = UUID.fromString("30db0a7d-ebbd-4bf7-aaad-4bed53d54530");
+    private final UUID PEBBLE_UUID = UUID.fromString("30db0a7d-ebbd-4bf7-aaad-4bed53d54530");
     
     public PebbleController(Context context, DualJoystickView dualJoystickView) {
     	super(context);
@@ -119,9 +119,9 @@ public class PebbleController extends AbstractController{
     public void enable() {
         super.enable();
         
-        PebbleKit.startAppOnPebble(mContext, pebbleUUID);
+        PebbleKit.startAppOnPebble(mContext, PEBBLE_UUID);
 
-        dataHandler = new PebbleKit.PebbleDataReceiver(pebbleUUID) {
+        dataHandler = new PebbleKit.PebbleDataReceiver(PEBBLE_UUID) {
             @Override
             public void receiveData(final Context context, final int transactionId, final PebbleDictionary data) {
             	
