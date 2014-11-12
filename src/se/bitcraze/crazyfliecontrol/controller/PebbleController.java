@@ -119,7 +119,7 @@ public class PebbleController extends AbstractController{
     public void enable() {
         super.enable();
         
-        PebbleKit.startAppOnPebble(getApplicationContext(), pebbleUUID);
+        PebbleKit.startAppOnPebble(mContext, pebbleUUID);
 
         dataHandler = new PebbleKit.PebbleDataReceiver(pebbleUUID) {
             @Override
