@@ -52,19 +52,16 @@ public class PebbleController extends AbstractController{
 
     private void pushButton(int button) {
     	switch (button) {
-    		//Yaw right    	
     		case BUTTON_DOWN:
     			thrust = -1;
     			resetThurst();
     			break;
-    		//lift-off
     		case BUTTON_SELECT:
 				CrazyradioLink.getCrazyradioLink().getParam().setHoverMode(true);
 				mControls.setHoverMode(true);
 				thrust = 1;
 				resetThurst();
     			break;
-    		//yaw left
     		case BUTTON_UP:
     			thrust = 1;
     			resetThurst();
@@ -73,11 +70,9 @@ public class PebbleController extends AbstractController{
     			Yaw = yawFactor;
     			resetYaw();
     			break;
-    		//Landing
     		case BUTTON_LONG_SELECT:
     			landing();
     			break;
-    		//rise
     		case BUTTON_LONG_UP:
     			Yaw = yawFactor*-1;
     			resetYaw();
