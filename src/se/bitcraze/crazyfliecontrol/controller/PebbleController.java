@@ -128,7 +128,7 @@ public class PebbleController extends AbstractController{
                 }
 
                 if(data.contains(DATA_X) && data.contains(DATA_Y) && data.contains(DATA_Z) ) {
-                    double d = Math.sqrt(data.getInteger(DATA_X)*data.getInteger(DATA_X)+data.getInteger(DATA_Y)*data.getInteger(DATA_Y)+data.getInteger(DATA_Z)*data.getInteger(DATA_Z));
+                    double d = Math.max(Math.sqrt(data.getInteger(DATA_X)*data.getInteger(DATA_X)+data.getInteger(DATA_Y)*data.getInteger(DATA_Y)+data.getInteger(DATA_Z)*data.getInteger(DATA_Z)),0.001);
                     sensorRoll = (float) ((float) data.getInteger(DATA_X) / (float) d) * AMPLIFICATION;
                     sensorPitch = (float) (data.getInteger(DATA_Y) / (float) d) * AMPLIFICATION;
                 } else {
